@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 
 import HomeView from "../views/HomeView.vue";
 import AuthLayout from "../layouts/AuthLayout.vue";
-import Register from "../components/auth/Register.vue";
+import Register from "../components/shared/auth/Register.vue";
 
 const routes: RouteRecordRaw[] = [
   {

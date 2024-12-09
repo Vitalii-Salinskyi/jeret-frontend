@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { Icon } from "@iconify/vue";
+
+import { Copyright } from "lucide-vue-next";
 </script>
 
 <template>
@@ -10,19 +11,19 @@ import { Icon } from "@iconify/vue";
         <div class="size-2 bg-[#4A4543] rounded-full"></div>
         <h2 class="text-[#4A4543] font-semibold text-xl">Jeret</h2>
       </div>
-      <div class="flex-1 flex-center">
+      <section class="flex-1 flex-center">
         <RouterView />
-      </div>
+      </section>
       <div class="flex items-center gap-1.5 pb-9 pt-3 text-[#808080]">
-        <Icon icon="proicons:copyright" width="16" height="16" />
+        <Copyright class="size-3.5" />
         <h3 class="font">Jeret {{ new Date().getFullYear() }}</h3>
       </div>
     </div>
-    <div class="flex-1 bg-primary-100 flex-center overflow-hidden">
+    <div class="flex-1 bg-main-purple-100 flex-center overflow-hidden">
       <div class="relative flex-center max-w-[469px] w-full">
-        <div class="size-[260px] bg-primary-500 rounded-full">
+        <div class="size-[260px] bg-main-purple-500 rounded-full">
           <div
-            class="absolute bg-primary-100/45 backdrop-blur-md scale-x-110 top-1/2 left-0 right-0 mx-auto bottom-0 w-[469px] h-[217px]"
+            class="absolute bg-main-purple-100/45 backdrop-blur-md scale-x-110 top-1/2 left-0 right-0 mx-auto bottom-0 w-[469px] h-[217px]"
           ></div>
         </div>
       </div>
