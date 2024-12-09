@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from "vue-router";
 
 import HomeView from "../views/HomeView.vue";
 import AuthLayout from "../layouts/AuthLayout.vue";
-import Register from "../components/shared/auth/Register.vue";
+import Auth from "../components/shared/auth/Auth.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -18,8 +18,8 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        name: "Register",
-        component: Register,
+        name: "Auth",
+        component: Auth,
       },
     ],
   },

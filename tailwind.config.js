@@ -21,6 +21,7 @@ module.exports = {
     },
     extend: {
       colors: {
+        "main-black": "141522",
         "main-purple": {
           100: "#DCE4FF",
           200: "#BAC8FF",
