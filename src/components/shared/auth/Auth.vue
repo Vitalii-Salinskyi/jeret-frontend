@@ -13,10 +13,14 @@ const isLogin = ref(true);
   <form class="flex flex-col max-w-[360px] w-full gap-8">
     <div class="flex flex-col gap-3 text-center md:text-left">
       <h1 class="text-[2.625rem] leading-tight text-main-black">
-        {{ isLogin ? "Welcome back" : "Welcome" }}
+        {{ isLogin ? "Welcome back" : "Create Account" }}
       </h1>
       <p class="text-base text-[#808080] tracking-wide">
-        Welcome{{ isLogin ? "!" : " back!" }} Please enter your details.
+        {{
+          isLogin
+            ? "Welcome back! Please enter your details."
+            : "Join us and get started with all the features."
+        }}
       </p>
     </div>
     <div class="flex flex-col gap-5">
@@ -69,7 +73,9 @@ const isLogin = ref(true);
           </RouterLink>
         </div>
         <div class="flex flex-col gap-4 font-medium">
-          <Button class="text-base">Sign in</Button>
+          <Button class="text-base">
+            {{ isLogin ? "Sign in" : "Sign up" }}
+          </Button>
           <Button
             class="items-center text-main-black bg-transparent hover:bg-transparent text-base shadow-none border border-[#DADADA]"
           >

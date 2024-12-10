@@ -4,6 +4,7 @@ import type { RouteRecordRaw } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import AuthLayout from "../layouts/AuthLayout.vue";
 import Auth from "../components/shared/auth/Auth.vue";
+import Google from "@/components/shared/auth/Google.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -22,6 +23,11 @@ const routes: RouteRecordRaw[] = [
         component: Auth,
       },
     ],
+  },
+  {
+    path: "/auth/google",
+    name: "AuthGoogle",
+    component: Google,
   },
 ];
 
