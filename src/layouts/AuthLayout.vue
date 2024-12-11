@@ -8,7 +8,7 @@ import { Copyright } from "lucide-vue-next";
   <section class="flex min-h-screen">
     <div class="flex flex-col flex-1 px-5 sm:px-9">
       <div class="hidden md:flex items-center gap-2 pt-9 pb-3">
-        <div class="size-2 bg-[#4A4543] rounded-full"></div>
+        <div class="size-2.5 bg-[#4A4543] rounded-full"></div>
         <h2 class="text-[#4A4543] font-semibold text-xl">Jeret</h2>
       </div>
       <section class="flex-1 flex-center flex-col gap-6 py-6 md:py-0">

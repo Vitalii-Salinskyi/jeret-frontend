@@ -6,10 +6,9 @@ import { useToast } from "@/components/ui/toast";
 
 import Spinner from "@/components/ui/Spinner.vue";
 
-import { getUserLocationAndDeviceInfo } from "@/utils/navigator";
 import { setTokens } from "@/utils/tokens";
 
-import { authorizeGoogle } from "@/api/auth";
+import { authorizeGoogle, getUserLocationAndDeviceInfo } from "@/api/auth";
 
 import { AuthTokens, GoogleAuthDto } from "@/interfaces/auth";
 
@@ -65,6 +64,7 @@ onBeforeMount(async () => {
     }
 
     setTokens(data as AuthTokens);
+    router.replace("/");
   } catch (error) {
     router.replace("/auth");
     throw error;
