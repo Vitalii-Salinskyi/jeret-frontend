@@ -21,7 +21,7 @@ module.exports = {
     },
     extend: {
       colors: {
-        "main-black": "141522",
+        "main-black": "#141522",
         "main-purple": {
           100: "#DCE4FF",
           200: "#BAC8FF",
@@ -69,6 +69,7 @@ module.exports = {
       },
       borderRadius: {
         xl: "calc(var(--radius) + 4px)",
+        "lg-max": "calc(var(--radius) + 2px)",
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",

@@ -5,12 +5,20 @@ import HomeView from "../views/HomeView.vue";
 import AuthLayout from "../layouts/AuthLayout.vue";
 import Auth from "../components/shared/auth/Auth.vue";
 import Google from "@/components/shared/auth/Google.vue";
+import HomeLayout from "@/layouts/HomeLayout.vue";
 
 const routes: RouteRecordRaw[] = [
   {
     path: "/",
-    name: "Home",
-    component: HomeView,
+    name: "HomeLayout",
+    component: HomeLayout,
+    children: [
+      {
+        path: "",
+        name: "Home",
+        component: HomeView,
+      },
+    ],
   },
   {
     path: "/auth",

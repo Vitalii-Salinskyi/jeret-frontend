@@ -5,7 +5,7 @@ import { Copyright } from "lucide-vue-next";
 </script>
 
 <template>
-  <section class="flex min-h-screen">
+  <main class="flex min-h-screen">
     <div class="flex flex-col flex-1 px-5 sm:px-9">
       <div class="hidden md:flex items-center gap-2 pt-9 pb-3">
         <div class="size-2.5 bg-[#4A4543] rounded-full"></div>
@@ -39,5 +39,5 @@ import { Copyright } from "lucide-vue-next";
         </div>
       </div>
     </div>
-  </section>
+  </main>
 </template>
