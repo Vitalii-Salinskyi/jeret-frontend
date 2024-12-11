@@ -7,6 +7,7 @@ interface AuthInputProps extends /* @vue-ignore */ InputHTMLAttributes {
   id: string;
   label: string;
   placeholder: string;
+  error: string;
 }
 
 withDefaults(defineProps<AuthInputProps>(), {
@@ -24,5 +25,6 @@ const attrs = useAttrs();
       {{ label }}
     </label>
     <Input :id="id" :placeholder="placeholder" v-bind="attrs" />
+    <span v-if="error" class="text-red-400">{{ error }}</span>
   </div>
 </template>

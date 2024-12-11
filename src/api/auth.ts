@@ -68,7 +68,6 @@ export const login = async ({
   loginDto: LoginDto;
   createSessionDto: CreateSessionDto;
 }): Promise<ResponseResult> => {
-  debugger;
   try {
     const res = await axios.post(`${ENDPOINT}/auth/login`, {
       loginDto,
