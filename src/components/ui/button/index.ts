@@ -26,7 +26,7 @@ export const buttonVariants = cva(
       },
       rounded: {
         default: "rounded-lg",
-        lg: "rounded-[0.625rem]",
+        lg: "rounded-lg-max",
       },
     },
     defaultVariants: {
