@@ -15,23 +15,43 @@ import { jobRoles } from "@/constants";
 import { updateUserData } from "@/api/users";
 
 import { JobRolesEnum } from "@/interfaces";
+import { useSessionStore } from "@/stores/sessionStore";
+import Spinner from "@/components/ui/Spinner.vue";
 
+const sessionStore = useSessionStore();
 const { toast } = useToast();
 const router = useRouter();
 
 const role = ref<JobRolesEnum | undefined>(undefined);
+const isLoading = ref<boolean>(false);
 
 const handleSubmit = async () => {
-  if (role.value === undefined) {
-    toast({
-      title: "Role selection is required!",
-      variant: "destructive",
-    });
-    return;
-  }
+  isLoading.value = true;
 
-  await updateUserData({ job_role: role.value });
-  router.push("/");
+  try {
+    if (role.value === undefined) {
+      toast({
+        title: "Role selection is required!",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { status } = await updateUserData({ job_role: role.value });
+
+    if (status === "failure") {
+      toast({
+        title: "Something went wrong... Try again",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    sessionStore.updateUser({ profile_completed: true, job_role: role.value });
+    router.push("/");
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 
@@ -59,7 +79,10 @@ const handleSubmit = async () => {
           </SelectItem>
         </SelectContent>
       </Select>
-      <Button class="text-base">Continue</Button>
+      <Button class="text-base relative" :disabled="isLoading">
+        <template v-if="!isLoading">Continue</template>
+        <Spinner v-else color-class="fill-main-purple-800" />
+      </Button>
     </div>
   </form>
 </template>

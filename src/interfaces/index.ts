@@ -1,7 +1,7 @@
-export interface ResponseResult {
+export interface ResponseResult<T = any> {
   status: "success" | "failure";
   code: number;
-  data: any;
+  data: T;
 }
 
 export enum JobRolesEnum {
