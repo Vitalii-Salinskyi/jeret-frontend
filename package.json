@@ -16,6 +16,7 @@
     "clsx": "^2.1.1",
     "js-cookie": "^3.0.5",
     "lucide-vue-next": "^0.468.0",
+    "pinia": "^2.3.0",
     "radix-vue": "^1.9.11",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",

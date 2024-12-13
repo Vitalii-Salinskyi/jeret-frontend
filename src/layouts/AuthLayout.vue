@@ -1,11 +1,43 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
+import { onBeforeMount, ref } from "vue";
+import { RouterView, useRouter } from "vue-router";
+
+import Spinner from "@/components/ui/Spinner.vue";
 
 import { Copyright } from "lucide-vue-next";
+
+import { getProfile } from "@/api/users";
+import { useSessionStore } from "@/stores/sessionStore";
+
+const sessionStore = useSessionStore();
+const router = useRouter();
+
+const isLoading = ref(true);
+
+onBeforeMount(async () => {
+  const { status, data } = await getProfile();
+
+  if (status === "success") {
+    sessionStore.updateUser(data);
+    if (!data.profile_completed) {
+      router.push("/auth/role");
+    } else {
+      router.push("/");
+    }
+  }
+
+  isLoading.value = false;
+});
 </script>
 
 <template>
-  <main class="flex min-h-screen">
+  <Spinner
+    v-if="isLoading"
+    size-class="size-14"
+    inner-class="text-main-purple-200"
+  />
+
+  <main class="flex min-h-screen" v-else>
     <div class="flex flex-col flex-1 px-5 sm:px-9">
       <div class="hidden md:flex items-center gap-2 pt-9 pb-3">
         <div class="size-2.5 bg-[#4A4543] rounded-full"></div>

@@ -4,8 +4,9 @@ import { RouterLink, useRouter } from "vue-router";
 import { useField, useForm } from "vee-validate";
 import { useToast } from "@/components/ui/toast";
 
-import { Checkbox } from "@/components/ui/checkbox";
 import Button from "@/components/ui/button/Button.vue";
+import { Checkbox } from "@/components/ui/checkbox";
+import Spinner from "@/components/ui/Spinner.vue";
 import AuthInput from "./AuthInput.vue";
 
 import { loginSchema, registerSchema } from "@/schemas/auth";
@@ -28,6 +29,7 @@ const router = useRouter();
 const isLogin = ref<boolean>(false);
 const termsConsent = ref<boolean>(false);
 const remember = ref<boolean>(false);
+const isLoading = ref<boolean>(false);
 
 const validationSchema = computed(() =>
   isLogin ? loginSchema : registerSchema
@@ -43,58 +45,64 @@ const { value: email, meta: emailMeta } = useField("email");
 const { value: password, meta: passwordMeta } = useField("password");
 
 const onSubmit = handleSubmit(async ({ email, password, name }) => {
-  let res;
+  isLoading.value = true;
 
-  if (isLogin.value === false) {
-    if (!termsConsent.value) {
+  try {
+    let res;
+
+    if (isLogin.value === false) {
+      if (!termsConsent.value) {
+        toast({
+          title: "Terms and Conditions Required",
+          description: "Please accept the terms and conditions to proceed.",
+          variant: "destructive",
+        });
+        return;
+      }
+      res = await register({ email, password, name: name as string });
+    } else {
+      const locationAndDevice = await getUserLocationAndDeviceInfo();
+
+      if (locationAndDevice.error) {
+        toast({
+          title: "Authentication Failed",
+          description: locationAndDevice.error,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      res = await login({
+        loginDto: { email, password },
+        createSessionDto: locationAndDevice as CreateSessionDto,
+      });
+    }
+
+    if (res.status === "failure") {
       toast({
-        title: "Terms and Conditions Required",
-        description: "Please accept the terms and conditions to proceed.",
+        title: isLogin ? "Login Failed" : "Registration Failed",
+        description: res.data,
         variant: "destructive",
       });
       return;
     }
-    res = await register({ email, password, name: name as string });
-  } else {
-    const locationAndDevice = await getUserLocationAndDeviceInfo();
 
-    if (locationAndDevice.error) {
+    if (isLogin.value) {
+      router.push("/");
+      setTokens(res.data as AuthTokens);
+    } else {
       toast({
-        title: "Authentication Failed",
-        description: locationAndDevice.error,
-        variant: "destructive",
+        title: "Account created successfully",
+        description:
+          "Your account has been successfully created. You can now log in.",
       });
-      return;
+      isLogin.value = true;
+      resetForm({
+        values: initialValues,
+      });
     }
-
-    res = await login({
-      loginDto: { email, password },
-      createSessionDto: locationAndDevice as CreateSessionDto,
-    });
-  }
-
-  if (res.status === "failure") {
-    toast({
-      title: isLogin ? "Login Failed" : "Registration Failed",
-      description: res.data,
-      variant: "destructive",
-    });
-    return;
-  }
-
-  if (isLogin.value) {
-    router.push("/");
-    setTokens(res.data as AuthTokens);
-  } else {
-    toast({
-      title: "Account created successfully",
-      description:
-        "Your account has been successfully created. You can now log in.",
-    });
-    isLogin.value = true;
-    resetForm({
-      values: initialValues,
-    });
+  } finally {
+    isLoading.value = false;
   }
 });
 
@@ -192,8 +200,11 @@ watch(
           </label>
         </div>
         <div class="flex flex-col gap-4 font-medium">
-          <Button class="text-base">
-            {{ isLogin ? "Sign in" : "Sign up" }}
+          <Button class="text-base relative">
+            <template v-if="!isLoading">
+              {{ isLogin ? "Sign in" : "Sign up" }}
+            </template>
+            <Spinner v-else color-class="fill-main-purple-800" />
           </Button>
           <Button
             type="button"
@@ -218,6 +229,7 @@ watch(
       </p>
       <button
         @:click="isLogin = !isLogin"
+        :disabled="isLoading"
         type="button"
         class="text-main-purple-400"
       >
