@@ -6,6 +6,7 @@ import AuthLayout from "../layouts/AuthLayout.vue";
 import Auth from "../components/shared/auth/Auth.vue";
 import Google from "@/components/shared/auth/Google.vue";
 import HomeLayout from "@/layouts/HomeLayout.vue";
+import SetRole from "@/components/shared/auth/SetRole.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -29,6 +30,11 @@ const routes: RouteRecordRaw[] = [
         path: "",
         name: "Auth",
         component: Auth,
+      },
+      {
+        path: "role",
+        name: "Role",
+        component: SetRole,
       },
     ],
   },
