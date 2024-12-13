@@ -68,6 +68,15 @@
   }
 }
 
+.invisible-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.invisible-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -79,5 +88,26 @@
 
   .flex-center {
     @apply flex items-center justify-center;
+  }
+}
+
+.perspective {
+  perspective: 500px;
+}
+
+.dropdown-animation {
+  animation: rotateMenu 325ms ease-in-out forwards;
+  transform-origin: top center;
+}
+
+@keyframes rotateMenu {
+  0% {
+    transform: rotateX(-90deg);
+  }
+  80% {
+    transform: rotateX(5deg);
+  }
+  100% {
+    transform: rotateX(0deg);
   }
 }

@@ -43,9 +43,7 @@ export const register = async (
   registerDto: RegisterDto
 ): Promise<ResponseResult> => {
   try {
-    const res = await axios.post(`${ENDPOINT}/auth/register`, {
-      ...registerDto,
-    });
+    const res = await axios.post(`${ENDPOINT}/auth/register`, registerDto);
 
     return {
       status: "success",
