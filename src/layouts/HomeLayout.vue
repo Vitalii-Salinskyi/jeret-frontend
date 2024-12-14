@@ -5,11 +5,12 @@ import { useRoute, useRouter } from "vue-router";
 import { useSessionStore } from "@/stores/sessionStore";
 import { useToast } from "@/components/ui/toast";
 
+import Header from "@/components/shared/Header.vue";
 import Sidebar from "@/components/shared/Sidebar/Sidebar.vue";
 import Spinner from "@/components/ui/Spinner.vue";
 
 import { getProfile } from "@/api/users";
-import Header from "@/components/shared/Header.vue";
+
 import { headerVariants } from "@/constants/nav";
 
 const sessionStore = useSessionStore();

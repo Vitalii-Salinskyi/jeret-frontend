@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { FunctionalComponent, ref } from "vue";
+
 import { LucideProps } from "lucide-vue-next";
 
 interface SidebarItemProps {
@@ -22,7 +23,7 @@ const tooltipVisible = ref<boolean>(false);
     :to="path"
     :class="[
       'flex items-center justify-center lg:justify-stretch gap-3 lg:px-5 lg:py-2.5 text-sm font-semibold hover:bg-[#F5F5F7] rounded-lg-max size-10 lg:w-full transition-colors',
-      currentPath === path
+      path.includes(currentPath)
         ? 'text-main-black bg-[#F5F5F7]'
         : 'text-[#8E92BC] bg-white',
     ]"

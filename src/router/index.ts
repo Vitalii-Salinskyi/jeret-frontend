@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
     component: HomeLayout,
     children: [
       {
-        path: "",
+        path: "dashboard",
         name: "Dashboard",
         component: DashboardView,
       },

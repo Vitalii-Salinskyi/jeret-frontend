@@ -1,4 +1,3 @@
-import { HeaderProps } from "@/components/shared/Header.vue";
 import {
   LayoutDashboard,
   BookOpenText,
@@ -7,11 +6,13 @@ import {
   Settings,
 } from "lucide-vue-next";
 
+import { HeaderVariant } from "@/interfaces";
+
 export const navLinks = [
   {
     icon: LayoutDashboard,
     title: "Overview",
-    path: "/",
+    path: "/dashboard",
   },
   {
     icon: BookOpenText,
@@ -34,3 +35,22 @@ export const navLinks = [
     path: "/settings",
   },
 ] as const;
+
+export const headerVariants: Record<string, HeaderVariant> = {
+  Dashboard: {
+    title: "Hi, ",
+    subtitle: "Let's finish your task today!",
+  },
+  Tasks: {
+    title: "Explore Task",
+  },
+  Users: {
+    title: "Explore Users",
+  },
+  Inbox: {
+    title: "Message",
+  },
+  Settings: {
+    title: "Settings",
+  },
+};

@@ -15,3 +15,8 @@ export enum JobRolesEnum {
   ThreeDDesigner = "3D Designer",
   TwoDDesigner = "2D Designer",
 }
+
+export interface HeaderVariant {
+  title: string;
+  subtitle?: string;
+}
