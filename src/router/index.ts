@@ -1,12 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 
-import HomeView from "../views/HomeView.vue";
 import AuthLayout from "../layouts/AuthLayout.vue";
 import Auth from "../components/shared/auth/Auth.vue";
 import Google from "@/components/shared/auth/Google.vue";
 import HomeLayout from "@/layouts/HomeLayout.vue";
 import SetRole from "@/components/shared/auth/SetRole.vue";
+import DashboardView from "../views/DashboardView.vue";
+import UsersView from "@/views/UsersView.vue";
+import TasksView from "@/views/TasksView.vue";
+import SettingsView from "@/views/SettingsView.vue";
+import InboxView from "@/views/InboxView.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -16,8 +20,28 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: "",
-        name: "Home",
-        component: HomeView,
+        name: "Dashboard",
+        component: DashboardView,
+      },
+      {
+        path: "users",
+        name: "Users",
+        component: UsersView,
+      },
+      {
+        path: "tasks",
+        name: "Tasks",
+        component: TasksView,
+      },
+      {
+        path: "settings",
+        name: "Settings",
+        component: SettingsView,
+      },
+      {
+        path: "inbox",
+        name: "Inbox",
+        component: InboxView,
       },
     ],
   },

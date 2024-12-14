@@ -1,3 +1,4 @@
+import { HeaderProps } from "@/components/shared/Header.vue";
 import {
   LayoutDashboard,
   BookOpenText,
@@ -19,8 +20,8 @@ export const navLinks = [
   },
   {
     icon: CircleUser,
-    title: "Mentors",
-    path: "/mentors",
+    title: "Users",
+    path: "/users",
   },
   {
     icon: MessageCircleMore,

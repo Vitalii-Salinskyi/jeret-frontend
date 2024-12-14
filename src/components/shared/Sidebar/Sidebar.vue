@@ -5,7 +5,7 @@ import SidebarItem from "./SidebarItem.vue";
 
 import { navLinks } from "@/constants/nav";
 
-const { path: currentPath } = useRoute();
+const route = useRoute();
 </script>
 
 <template>
@@ -28,7 +28,7 @@ const { path: currentPath } = useRoute();
           v-for="link in navLinks"
           :key="link.path"
           v-bind:="link"
-          :current-path="currentPath"
+          :current-path="route.path"
         />
       </nav>
     </div>
