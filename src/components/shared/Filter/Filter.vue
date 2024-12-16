@@ -26,7 +26,7 @@ interface FilterProps {
   sidebarTitle: string;
   isLoading: boolean;
   sortBy: string;
-  input: string;
+  search: string;
 }
 
 withDefaults(defineProps<FilterProps>(), {
@@ -45,13 +45,9 @@ const handleSidebarClose = (e: KeyboardEvent) => {
   if (e.key === "Escape") isSidebarOpen.value = false;
 };
 
-onMounted(() => {
-  document.addEventListener("keydown", handleSidebarClose);
-});
+onMounted(() => document.addEventListener("keydown", handleSidebarClose));
 
-onUnmounted(() => {
-  document.removeEventListener("keydown", handleSidebarClose);
-});
+onUnmounted(() => document.removeEventListener("keydown", handleSidebarClose));
 </script>
 
 <template>
@@ -61,10 +57,10 @@ onUnmounted(() => {
     <div class="absolute w-px h-full top-0 bottom-0 -left-px bg-white" />
     <div class="relative w-full min-[876px]:max-w-[480px] flex-1">
       <Input
-        class="border-[#F5F5F7] placeholder:text-[#54577A] placeholder:text-sm text-sm h-[52px] rounded-lg-max"
+        class="border-[#F5F5F7] placeholder:text-[#54577A] placeholder:text-sm pr-12 text-sm h-[52px] rounded-lg-max"
         @update:model-value="(e) => emit('search-input', e as string)"
         :placeholder="placeholder"
-        :value="input"
+        :value="search"
         type="text"
       />
       <Search
