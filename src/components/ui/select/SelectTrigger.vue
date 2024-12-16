@@ -9,9 +9,14 @@ import {
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
 
-const props = defineProps<
-  SelectTriggerProps & { class?: HTMLAttributes["class"] }
->();
+const props = withDefaults(
+  defineProps<
+    SelectTriggerProps & { class?: HTMLAttributes["class"]; withIcon?: boolean }
+  >(),
+  {
+    withIcon: true,
+  }
+);
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -33,7 +38,7 @@ const forwardedProps = useForwardProps(delegatedProps);
     "
   >
     <slot />
-    <SelectIcon as-child>
+    <SelectIcon as-child v-if="withIcon">
       <ChevronDown
         class="w-4 h-4 opacity-50 shrink-0 group-data-[state=open]:rotate-180 transition-transform"
       />

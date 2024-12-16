@@ -10,9 +10,14 @@ import {
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
 
-const props = defineProps<
-  SelectItemProps & { class?: HTMLAttributes["class"] }
->();
+const props = withDefaults(
+  defineProps<
+    SelectItemProps & { class?: HTMLAttributes["class"]; withIcon?: boolean }
+  >(),
+  {
+    withIcon: true,
+  }
+);
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props;
@@ -33,7 +38,10 @@ const forwardedProps = useForwardProps(delegatedProps);
       )
     "
   >
-    <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+    <span
+      class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center"
+      v-if="withIcon"
+    >
       <SelectItemIndicator>
         <Check class="h-4 w-4" />
       </SelectItemIndicator>

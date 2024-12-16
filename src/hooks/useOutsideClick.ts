@@ -2,7 +2,7 @@ import { type Ref, useTemplateRef, onMounted, onUnmounted } from "vue";
 
 interface UseOutsideClickProps<T> {
   templateRefName: string;
-  shown: Ref<T>;
+  shown?: Ref<T>;
   closeHandler?: () => void;
 }
 
@@ -14,18 +14,16 @@ export const useOutsideClick = <T>({
   const elRef = useTemplateRef<HTMLElement>(templateRefName);
 
   const defaultCloseHandler = () => {
-    if (typeof shown.value === "boolean") {
+    if (shown && typeof shown.value === "boolean") {
       shown.value = false as T;
     }
   };
 
   const handleOutsideClick = (event: Event) => {
-    if (
-      elRef.value &&
-      !elRef.value.contains(event.target as Node) &&
-      shown.value
-    ) {
-      (closeHandler ?? defaultCloseHandler)();
+    if (elRef.value && !elRef.value.contains(event.target as Node)) {
+      (shown && shown.value
+        ? closeHandler ?? defaultCloseHandler
+        : closeHandler!)();
     }
   };
 

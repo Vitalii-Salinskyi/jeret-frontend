@@ -63,7 +63,10 @@ onBeforeMount(() => {
     />
     <div
       v-if="hasLoaded !== true"
-      class="z-0 absolute size-full inset-0 flex-center"
+      :class="{
+        'z-0 absolute size-full inset-0 flex-center': true,
+        'animate-pulse': hasLoaded === null,
+      }"
     >
       {{ name[0].toUpperCase() }}
     </div>

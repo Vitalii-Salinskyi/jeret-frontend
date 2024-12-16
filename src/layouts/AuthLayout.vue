@@ -24,6 +24,8 @@ onBeforeMount(async () => {
     } else {
       router.push("/");
     }
+  } else {
+    router.push("/auth");
   }
 
   isLoading.value = false;

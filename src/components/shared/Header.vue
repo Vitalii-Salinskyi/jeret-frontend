@@ -29,9 +29,9 @@ defineProps<HeaderProps>();
     <!-- Menu -->
     <div
       :class="{
-        'fixed inset-0 top-[110px] bg-white z-20 transition-transform duration-500': true,
+        'fixed inset-0 top-[110px] bg-white z-20 transition-transform duration-300': true,
         'translate-y-0': isMenuOpen,
-        '-translate-y-[325%]': !isMenuOpen,
+        '-translate-y-[150%]': !isMenuOpen,
       }"
     >
       <nav class="mx-auto flex flex-col items-center gap-3 w-full h-full px-6">

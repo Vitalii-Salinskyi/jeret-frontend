@@ -27,3 +27,9 @@ export interface UpdateUserDto {
   is_online?: boolean;
   is_deleted?: boolean;
 }
+
+export type UserSortType =
+  | "followers_count"
+  | "tasks_completed"
+  | "rating"
+  | "review_count";

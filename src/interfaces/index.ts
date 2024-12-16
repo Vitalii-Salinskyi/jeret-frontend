@@ -20,3 +20,8 @@ export interface HeaderVariant {
   title: string;
   subtitle?: string;
 }
+
+export interface FilterOption<T> {
+  label: string;
+  value: T;
+}
