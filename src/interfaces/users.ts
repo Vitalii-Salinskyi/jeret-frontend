@@ -4,7 +4,7 @@ export interface IUser {
   id: number;
   name: string;
   email: string;
-  profile_picture?: string;
+  profile_picture: string;
   job_role?: JobRolesEnum;
   password?: string;
   google_id?: string;

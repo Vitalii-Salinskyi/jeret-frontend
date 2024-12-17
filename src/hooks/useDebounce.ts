@@ -1,6 +1,6 @@
 import { customRef, ref } from "vue";
 
-export const useDebounce = <T>(value: T, delay: number = 300) => {
+export const useDebounce = <T>(value: T, delay: number = 325) => {
   const debounceRef = ref(value);
   let timeoutId: NodeJS.Timeout;
 
