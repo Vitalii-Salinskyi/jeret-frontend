@@ -87,13 +87,17 @@ onUnmounted(() => document.removeEventListener("keydown", handleSidebarClose));
           </SelectTrigger>
           <SelectContent class="max-h-[225px]">
             <SelectItem
-              v-for="category in categories"
+              v-for="categoryOption in categories"
               class="pl-2.5"
-              :key="category.value"
-              :value="category.value"
+              :key="categoryOption.value"
+              :value="
+                categoryOption.value === category
+                  ? 'reset'
+                  : categoryOption.value
+              "
               :with-icon="false"
             >
-              {{ category.label }}
+              {{ categoryOption.label }}
             </SelectItem>
           </SelectContent>
         </Select>
