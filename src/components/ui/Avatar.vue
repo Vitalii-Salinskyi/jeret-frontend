@@ -10,14 +10,14 @@ import {
 import { cn } from "@/lib/utils";
 
 interface AvatarProps {
-  class?: HTMLAttributes["class"];
+  className?: HTMLAttributes["class"];
   name: string;
   src: string;
   alt: string;
 }
 
 withDefaults(defineProps<AvatarProps>(), {
-  class: "",
+  className: "",
 });
 
 const imgEl = useTemplateRef("img-ref");
@@ -47,7 +47,7 @@ onBeforeMount(() => {
     :class="
       cn(
         'size-[52px] rounded-full overflow-hidden flex-center bg-main-purple-300 text-white text-xl cursor-pointer transition-transform active:scale-95 relative',
-        class {}
+        className
       )
     "
   >
@@ -64,7 +64,7 @@ onBeforeMount(() => {
     <div
       v-if="hasLoaded !== true"
       :class="{
-        'z-0 absolute size-full inset-0 flex-center': true,
+        'z-0 absolute size-full inset-0 flex-center font-medium text-xl': true,
         'animate-pulse': hasLoaded === null,
       }"
     >

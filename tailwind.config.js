@@ -69,6 +69,7 @@ module.exports = {
         },
       },
       borderRadius: {
+        skeleton: "calc(var(--radius) + 12px)",
         xl: "calc(var(--radius) + 4px)",
         "lg-max": "calc(var(--radius) + 2px)",
         lg: "var(--radius)",
