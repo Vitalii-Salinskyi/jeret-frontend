@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import UsersFilter from "@/components/shared/Filter/Filter.vue";
 import UserCard from "@/components/shared/users/UserCard.vue";
+import UserCardSkeleton from "@/components/shared/users/UserCardSkeleton.vue";
 
 import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 
@@ -21,7 +22,6 @@ import { getRecentUsers, getUsers } from "@/api/users";
 
 import { IUser, UserSortType } from "@/interfaces/users";
 import { JobRolesEnum } from "@/interfaces";
-import UserCardSkeleton from "@/components/shared/users/UserCardSkeleton.vue";
 
 const debouncedSearch = useDebounce("");
 
@@ -173,13 +173,14 @@ watch([debouncedSearch, currentPage, category, sortBy], async () => {
       class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 md:gap-6 2xl:gap-8"
     >
       <template v-if="isLoading">
-        <UserCardSkeleton v-for="_item in Array(8).fill(0)" />
+        <UserCardSkeleton v-for="_item in Array(6).fill(0)" with-description />
       </template>
       <template v-else>
         <UserCard
           v-for="user in paginatedUsers.data"
           :user="user"
           :key="user.id"
+          with-description
         />
       </template>
     </div>

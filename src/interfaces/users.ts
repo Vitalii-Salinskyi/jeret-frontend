@@ -5,6 +5,7 @@ export interface IUser {
   name: string;
   email: string;
   profile_picture: string;
+  description: string;
   job_role?: JobRolesEnum;
   password?: string;
   google_id?: string;
@@ -23,6 +24,7 @@ export interface IUser {
 export interface UpdateUserDto {
   name?: string;
   profile_picture?: string;
+  description?: string;
   job_role?: JobRolesEnum;
   is_online?: boolean;
   is_deleted?: boolean;

@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import AvatarSkeleton from "./AvatarSkeleton.vue";
+
+interface UserCardSkeletonProps {
+  withDescription?: boolean;
+}
+
+withDefaults(defineProps<UserCardSkeletonProps>(), {
+  withDescription: false,
+});
 </script>
 
 <template>
@@ -21,6 +29,12 @@ import AvatarSkeleton from "./AvatarSkeleton.vue";
       <div
         class="w-20 h-3 rounded-skeleton bg-main-purple-500/30 animate-pulse"
       />
+    </div>
+
+    <div class="flex flex-col gap-3" v-if="withDescription">
+      <div class="w-full h-3 rounded-skeleton bg-[#546FFF]/10" />
+      <div class="w-full h-3 rounded-skeleton bg-[#546FFF]/10" />
+      <div class="w-full h-3 rounded-skeleton bg-[#546FFF]/10" />
     </div>
 
     <div class="flex justify-between text-main-black font-medium text-sm">

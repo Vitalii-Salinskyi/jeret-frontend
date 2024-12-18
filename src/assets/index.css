@@ -77,6 +77,25 @@
   -ms-overflow-style: none;
 }
 
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #dce4ff;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7e95ff;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #4c66da;
+}
+
 @layer base {
   * {
     @apply border-border;

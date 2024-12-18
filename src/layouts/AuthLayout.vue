@@ -20,7 +20,7 @@ onBeforeMount(async () => {
   if (status === "success") {
     sessionStore.updateUser(data);
     if (!data.profile_completed) {
-      router.push("/auth/role");
+      router.push("/auth/profile");
     } else {
       router.push("/");
     }

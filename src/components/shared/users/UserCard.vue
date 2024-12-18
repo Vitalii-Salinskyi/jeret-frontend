@@ -4,9 +4,12 @@ import { IUser } from "@/interfaces/users";
 
 interface UserCardProps {
   user: IUser;
+  withDescription?: boolean;
 }
 
-defineProps<UserCardProps>();
+withDefaults(defineProps<UserCardProps>(), {
+  withDescription: false,
+});
 </script>
 
 <template>
@@ -38,6 +41,13 @@ defineProps<UserCardProps>();
         + Follow
       </button>
     </div>
+
+    <p
+      class="text-sm font-medium leading-[200%] text-[#8E92BC] line-clamp-2"
+      v-if="withDescription"
+    >
+      {{ user.description }}
+    </p>
 
     <div class="flex justify-between text-main-black font-medium text-sm">
       <div class="flex items-center gap-2">

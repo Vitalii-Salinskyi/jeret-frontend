@@ -58,7 +58,7 @@ onBeforeMount(async () => {
 
   <main class="flex" v-else>
     <Sidebar />
-    <div class="flex flex-col flex-1 overflow-x-hidden">
+    <div class="flex flex-col relative flex-1 overflow-auto">
       <Header
         v-if="route.name !== 'Dashboard'"
         v-bind="headerVariants[route.name as string]"
