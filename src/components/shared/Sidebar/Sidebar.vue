@@ -10,7 +10,7 @@ const route = useRoute();
 
 <template>
   <aside
-    class="lg:w-[252px] h-screen sticky top-0 border-r border-[#F5F5F7] p-3.5 lg:p-8 hidden sm:flex gap-4 flex-col"
+    class="lg:w-[252px] bg-white h-screen sticky top-0 border-r border-[#F5F5F7] p-3.5 lg:p-8 hidden sm:flex gap-4 flex-col"
   >
     <div class="flex flex-col gap-14">
       <div class="flex justify-center lg:justify-stretch items-center gap-3">

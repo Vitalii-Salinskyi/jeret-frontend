@@ -43,7 +43,7 @@ withDefaults(defineProps<UserCardProps>(), {
     </div>
 
     <p
-      class="text-sm font-medium leading-[200%] text-[#8E92BC] line-clamp-2"
+      class="text-sm font-medium leading-[200%] text-[#8E92BC] line-clamp-2 h-[56px]"
       v-if="withDescription"
     >
       {{ user.description }}

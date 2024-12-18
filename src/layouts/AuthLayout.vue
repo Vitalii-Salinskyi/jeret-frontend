@@ -33,13 +33,11 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <Spinner
-    v-if="isLoading"
-    size-class="size-14"
-    inner-class="text-main-purple-200"
-  />
+  <div v-if="isLoading" class="size-full bg-white">
+    <Spinner size-class="size-14" inner-class="text-main-purple-200" />
+  </div>
 
-  <main class="flex min-h-screen" v-else>
+  <main class="flex min-h-screen bg-white" v-else>
     <div class="flex flex-col flex-1 px-5 sm:px-9">
       <div class="hidden md:flex items-center gap-2 pt-9 pb-3">
         <div class="size-2.5 bg-[#4A4543] rounded-full"></div>

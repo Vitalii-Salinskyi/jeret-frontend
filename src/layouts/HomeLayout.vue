@@ -50,11 +50,9 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <Spinner
-    v-if="isLoading"
-    size-class="size-14"
-    inner-class="text-main-purple-200"
-  />
+  <div v-if="isLoading" class="size-full bg-white">
+    <Spinner size-class="size-14" inner-class="text-main-purple-200" />
+  </div>
 
   <main class="flex" v-else>
     <Sidebar />
