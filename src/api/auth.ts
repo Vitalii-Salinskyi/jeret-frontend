@@ -1,10 +1,15 @@
 import axios from "axios";
+import Cookies from "js-cookie";
+
+import { setTokens } from "@/utils/tokens";
 
 import { ResponseResult } from "@/interfaces";
 import {
+  AuthTokens,
   CreateSessionDto,
   GoogleAuthDto,
   LoginDto,
+  RefreshTokensDto,
   RegisterDto,
 } from "@/interfaces/auth";
 
@@ -83,6 +88,37 @@ export const login = async ({
       code: error.status,
       data: error.response.data.message,
     };
+  }
+};
+
+export const refreshTokens = async () => {
+  try {
+    const refreshToken = Cookies.get("refreshToken");
+
+    if (!refreshToken) throw new Error("Refresh token not found");
+
+    const { error, device, ip_address, lat, long } =
+      await getUserLocationAndDeviceInfo();
+
+    if (error) throw new Error(error);
+
+    const body: RefreshTokensDto = {
+      refresh_token: refreshToken,
+      device: device as string,
+      ip_address,
+      lat: lat as number,
+      long: long as number,
+    };
+
+    const res = await axios.post<AuthTokens>(`${ENDPOINT}/auth/refresh`, body);
+
+    if (!res.data.accessToken) throw new Error();
+
+    setTokens(res.data);
+
+    return res.data.accessToken;
+  } catch (error) {
+    throw error;
   }
 };
 

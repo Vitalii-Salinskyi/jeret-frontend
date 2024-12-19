@@ -1,5 +1,7 @@
 import Cookie from "js-cookie";
 
+import { refreshTokens } from "@/api/auth";
+
 import { AuthTokens } from "@/interfaces/auth";
 
 export const setTokens = ({ accessToken, refreshToken }: AuthTokens) => {
@@ -12,7 +14,9 @@ export const getAccessToken = async () => {
 
   if (!accessToken) {
     try {
-      // TODO: add refreshToken endpoint;
+      const newAccessToken = await refreshTokens();
+
+      accessToken = newAccessToken;
     } catch (error) {
       clearAllCookies();
     }
@@ -21,7 +25,7 @@ export const getAccessToken = async () => {
   return accessToken;
 };
 
-const clearAllCookies = () => {
+export const clearAllCookies = () => {
   const cookies = Cookie.get();
 
   Object.keys(cookies).forEach((cookieName) => {

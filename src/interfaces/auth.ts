@@ -5,6 +5,10 @@ export interface CreateSessionDto {
   device: string;
 }
 
+export interface RefreshTokensDto extends CreateSessionDto {
+  refresh_token: string;
+}
+
 export interface GoogleAuthDto extends CreateSessionDto {
   code: string;
 }
