@@ -1,8 +1,8 @@
-const animate = require("tailwindcss-animate");
-const tailwindHamburgers = require("tailwind-hamburgers");
+import animate from "tailwindcss-animate";
+import tailwindHamburgers from "tailwind-hamburgers";
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ["class"],
   safelist: ["dark"],
   prefix: "",
