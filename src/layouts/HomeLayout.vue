@@ -12,8 +12,11 @@ import Spinner from "@/components/ui/Spinner.vue";
 import { getProfile } from "@/api/users";
 
 import { headerVariants } from "@/constants/nav";
+import { useSocketStore } from "@/stores/socketStore";
 
 const sessionStore = useSessionStore();
+const socketStore = useSocketStore();
+
 const { toast } = useToast();
 const router = useRouter();
 const route = useRoute();
@@ -37,6 +40,7 @@ onBeforeMount(async () => {
       }
 
       sessionStore.updateUser(data);
+      socketStore.connect(data.id);
       user = data;
     }
 

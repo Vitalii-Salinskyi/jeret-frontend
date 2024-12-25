@@ -53,7 +53,6 @@ defineProps<HeaderProps>();
       </nav>
     </div>
     <!-- /Menu -->
-    <div class="absolute -left-px bg-white top-0 bottom-0 h-full w-px" />
     <div class="flex flex-col gap-6 px-6 md:px-8 py-8">
       <div class="flex items-center justify-between">
         <div

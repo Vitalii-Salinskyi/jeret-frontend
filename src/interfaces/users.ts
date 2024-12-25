@@ -35,3 +35,5 @@ export type UserSortType =
   | "tasks_completed"
   | "rating"
   | "review_count";
+
+export type UserStatusType = Record<number, "online" | "offline">;
