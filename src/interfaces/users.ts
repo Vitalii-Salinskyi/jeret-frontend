@@ -37,3 +37,14 @@ export type UserSortType =
   | "review_count";
 
 export type UserStatusType = Record<number, "online" | "offline">;
+
+export interface IFollowUser {
+  id: number;
+  name: string;
+  email: string;
+  profile_picture?: string;
+  description?: string;
+  job_role?: JobRolesEnum;
+}
+
+export type followType = "followers" | "following";
