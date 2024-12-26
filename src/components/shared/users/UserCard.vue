@@ -4,12 +4,17 @@ import { IUser } from "@/interfaces/users";
 
 interface UserCardProps {
   user: IUser;
+  followMap: Record<number, boolean>;
   withDescription?: boolean;
 }
 
 withDefaults(defineProps<UserCardProps>(), {
   withDescription: false,
 });
+
+const emit = defineEmits<{
+  (event: "follow-update", data: { id: number; status: boolean }): void;
+}>();
 </script>
 
 <template>
@@ -37,8 +42,13 @@ withDefaults(defineProps<UserCardProps>(), {
           </strong>
         </div>
       </div>
-      <button class="text-main-purple-500 font-medium text-nowrap text-sm">
-        + Follow
+      <button
+        class="text-main-purple-500 font-medium text-nowrap text-sm transition-transform active:scale-95"
+        @click="
+          emit('follow-update', { id: user.id, status: followMap[user.id] })
+        "
+      >
+        {{ followMap[user.id] ? "Followed" : "+ Follow" }}
       </button>
     </div>
 

@@ -20,6 +20,7 @@ import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 import { userSortOption, userCategories } from "@/constants/users";
 
 import { getRecentUsers, getUsers } from "@/api/users";
+import { followUser, getBulkFollowers, unfollowUser } from "@/api/followers";
 
 import { IUser, UserSortType } from "@/interfaces/users";
 import { JobRolesEnum } from "@/interfaces";
@@ -44,14 +45,15 @@ const category = ref<JobRolesEnum | undefined>(undefined);
 const search = ref("");
 
 const isLoading = ref<boolean>(true);
-const initialLoading = ref(true);
+const initialLoading = ref<boolean>(true);
+
 const showUsersSkeletons = ref(false);
 const currentPage = ref(1);
 
+const followMap = reactive<Record<number, boolean>>({});
 const recentUsers = ref<IUser[]>([]);
-
 const paginatedUsers = reactive<{
-  data: IUser[];
+  data: IUser[]; // backflow || matrix
   page: number;
   totalPages: number;
   totalResults: number;
@@ -99,10 +101,41 @@ const fetchPaginatedUsers = async (currentPage: number = 1) => {
       paginatedUsers.page = page;
       paginatedUsers.totalPages = totalPages;
       paginatedUsers.totalResults = total;
+
+      const userIds = data.map((user) => user.id);
+      await fetchFollowStatus(userIds);
     }
   } finally {
     isLoading.value = false;
     showUsersSkeletons.value = false;
+  }
+};
+
+const fetchFollowStatus = async (userIds: number[]) => {
+  const res = await getBulkFollowers(userIds);
+
+  if (res.status !== "success") return;
+
+  Object.keys(res.data).reduce((acc, key) => {
+    const typedKey = key as unknown as number;
+    followMap[typedKey] = res.data[typedKey];
+    return acc;
+  }, followMap);
+};
+
+const handleFollowUpdate = async ({
+  id,
+  status,
+}: {
+  id: number;
+  status: boolean;
+}) => {
+  followMap[id] = !status;
+
+  if (status === true) {
+    await unfollowUser(id);
+  } else {
+    await followUser(id);
   }
 };
 
@@ -115,6 +148,9 @@ onBeforeMount(async () => {
   ]);
 
   if (recentUsersRes.status === "success") {
+    const userIds = recentUsersRes.data.map((user) => user.id);
+    await fetchFollowStatus(userIds);
+
     recentUsers.value = recentUsersRes.data;
   }
 
@@ -192,7 +228,7 @@ watch(isNearBottom, async (nearBottom) => {
             :key="`recent-${user.id}`"
             class="md:basis-1/2 xl:basis-1/3 min-[1330px]:basis-[31%] md:pl-8"
           >
-            <UserCard :user="user" />
+            <UserCard :user :followMap @follow-update="handleFollowUpdate" />
           </CarouselItem>
         </template>
       </CarouselContent>
@@ -217,15 +253,17 @@ watch(isNearBottom, async (nearBottom) => {
         </template>
         <template v-else>
           <UserCard
+            @follow-update="handleFollowUpdate"
             v-for="user in paginatedUsers.data"
-            :user="user"
             :key="user.id"
+            :followMap
+            :user
             with-description
           />
           <UserCardSkeleton
             v-for="_item in Array(3).fill(0)"
-            with-description
             v-if="showUsersSkeletons"
+            with-description
           />
         </template>
       </div>
