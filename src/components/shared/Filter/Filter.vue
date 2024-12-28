@@ -5,15 +5,10 @@ import { Select } from "@/components/ui/select";
 import SelectTrigger from "@/components/ui/select/SelectTrigger.vue";
 import SelectContent from "@/components/ui/select/SelectContent.vue";
 import SelectItem from "@/components/ui/select/SelectItem.vue";
-import Input from "@/components/ui/input/Input.vue";
 import FilterSidebar from "./FilterSidebar.vue";
+import SearchInput from "@/components/ui/SearchInput.vue";
 
-import {
-  LayoutTemplate,
-  ListFilter,
-  Search,
-  SlidersHorizontal,
-} from "lucide-vue-next";
+import { LayoutTemplate, ListFilter, SlidersHorizontal } from "lucide-vue-next";
 
 import { FilterOption, JobRolesEnum } from "@/interfaces";
 import { UserSortType } from "@/interfaces/users";
@@ -55,19 +50,12 @@ onUnmounted(() => document.removeEventListener("keydown", handleSidebarClose));
     class="px-6 md:px-8 pb-8 bg-white relative flex items-center justify-between gap-6"
   >
     <div class="absolute w-px h-full top-0 bottom-0 -left-px bg-white" />
-    <div class="relative w-full min-[876px]:max-w-[480px] flex-1">
-      <Input
-        class="border-[#F5F5F7] placeholder:text-[#54577A] placeholder:text-sm pr-12 text-sm h-[52px] rounded-lg-max"
-        @update:model-value="(e) => emit('search-input', e as string)"
-        :placeholder="placeholder"
-        :value="search"
-        type="text"
-      />
-      <Search
-        class="absolute right-6 top-1/2 -translate-y-1/2 size-5 text-[#8E92BC]"
-      />
-    </div>
-
+    <SearchInput
+      @search-input="(e: string) => emit('search-input', e)"
+      class-name="w-full min-[876px]:max-w-[480px] flex-1"
+      :placeholder
+      :search
+    />
     <div>
       <div
         class="hidden min-[876px]:flex justify-between min-[876px]:justify-stretch w-full items-center gap-6"

@@ -176,9 +176,9 @@ watch(isNearBottom, async (nearBottom) => {
 </script>
 
 <template>
-  <div class="">
+  <section>
     <UsersFilter
-      :search="search"
+      :search
       :sort-by="sortBy"
       :category="category"
       :sort-options="userSortOption"
@@ -268,5 +268,5 @@ watch(isNearBottom, async (nearBottom) => {
         </template>
       </div>
     </div>
-  </div>
+  </section>
 </template>

@@ -66,9 +66,9 @@ onBeforeMount(async () => {
         v-bind="headerVariants[route.name as string]"
         :section-name="route.name as string"
       />
-      <div class="bg-[#FAFAFA] flex-1">
+      <main class="bg-[#FAFAFA] flex-1">
         <RouterView />
-      </div>
+      </main>
     </div>
   </main>
 </template>
