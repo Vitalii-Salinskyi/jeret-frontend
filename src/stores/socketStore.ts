@@ -14,10 +14,10 @@ export const useSocketStore = defineStore("socket", () => {
     }
 
     heartbeatInterval.value = setInterval(async () => {
-      if (socket.value?.connected) {
+      if (socket.value) {
         socket.value.emit("status:heartbeat", userId);
       }
-    }, 15000);
+    }, 12500);
   };
 
   const stopHeartbeat = () => {
@@ -48,10 +48,6 @@ export const useSocketStore = defineStore("socket", () => {
   const getSingleUserStatus = async (
     userId: number
   ): Promise<UserStatusType> => {
-    if (!socket.value?.connected) {
-      throw new Error("Socket is not connected");
-    }
-
     return new Promise((resolve) => {
       socket.value?.emit("status:single", userId, (res: UserStatusType) =>
         resolve(res)
@@ -62,10 +58,6 @@ export const useSocketStore = defineStore("socket", () => {
   const getBulkUserStatus = async (
     userIds: number[]
   ): Promise<UserStatusType> => {
-    if (!socket.value?.connected) {
-      throw new Error("Socket is not connected");
-    }
-
     return new Promise((resolve) => {
       socket.value?.emit("status:bulk", userIds, (res: UserStatusType) =>
         resolve(res)
