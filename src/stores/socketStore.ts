@@ -1,8 +1,10 @@
-import { defineStore } from "pinia";
 import { ref } from "vue";
+import { defineStore } from "pinia";
 
 import { io, Socket } from "socket.io-client";
+
 import { UserStatusType } from "@/interfaces/users";
+import { SendMessageDto, UpdateInboxMessageDto } from "@/interfaces/chats";
 
 export const useSocketStore = defineStore("socket", () => {
   const socket = ref<Socket | null>(null);
@@ -37,10 +39,12 @@ export const useSocketStore = defineStore("socket", () => {
     socket.value = socketClient;
 
     socketClient.on("connect", () => {
+      console.debug("Socket connected");
       startHeartbeat(userId);
     });
 
     socketClient.on("disconnect", () => {
+      console.debug("Socket disconnected");
       stopHeartbeat();
     });
   };
@@ -65,10 +69,55 @@ export const useSocketStore = defineStore("socket", () => {
     });
   };
 
+  const joinInbox = (userId: number) => {
+    socket.value?.emit("inbox:join", userId);
+  };
+
+  const leaveInbox = (userId: number) => {
+    socket.value?.emit("inbox:leave", userId);
+  };
+
+  const joinChatRoom = (chatId: number) => {
+    socket.value?.emit("chat:join", chatId);
+  };
+
+  const leaveChatRoom = (chatId: number) => {
+    socket.value?.emit("chat:leave", chatId);
+  };
+
+  const sendMessage = (sendMessageDto: SendMessageDto) => {
+    socket.value?.emit("chat:send:message", sendMessageDto);
+  };
+
+  const sendInboxMessage = (message: UpdateInboxMessageDto) => {
+    socket.value?.emit("inbox:send:message", message);
+  };
+
+  const bulkMessagesSeenUpdate = (
+    messages: SendMessageDto[],
+    receiverId: number,
+    chatId: number,
+    type: "save" | "update"
+  ) => {
+    socket.value?.emit("chat:update:messages:seen", {
+      messages,
+      receiverId,
+      chatId,
+      type,
+    });
+  };
+
   return {
     socket,
     connect,
+    sendMessage,
+    joinChatRoom,
+    joinInbox,
+    leaveChatRoom,
+    leaveInbox,
+    sendInboxMessage,
     getBulkUserStatus,
+    bulkMessagesSeenUpdate,
     getSingleUserStatus,
   };
 });
