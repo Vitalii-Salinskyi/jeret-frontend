@@ -15,13 +15,13 @@ import { UserChat } from "@/interfaces/chats";
 interface ChatListProps {
   chats: UserChat[];
   statusMap: UserStatusType;
-  selectedChat: UserChat | undefined;
+  selectedChat: UserChat | null;
 }
 
 const props = defineProps<ChatListProps>();
 
 const emit = defineEmits<{
-  (event: "select-chat", chat: UserChat): void;
+  (event: "select-chat", chat: UserChat, index: number): void;
   (event: "fetch-chats", chats: UserChat[]): void;
   (event: "fetch-statuses", statuses: UserStatusType): void;
 }>();
@@ -87,9 +87,12 @@ onBeforeUnmount(() => clearInterval(statusInterval));
 
 <template>
   <aside
-    class="bg-white p-1 min-[1364px]:p-6 pb-0 flex flex-col gap-8 min-[1364px]:w-[400px] border-r border-[#F5F5F7]"
+    :class="{
+      'bg-white p-4 md:p-1 min-[1364px]:p-6 pb-0 flex flex-col gap-8 w-full md:w-min min-[1364px]:w-[400px] border-r border-[#F5F5F7]': true,
+      'hidden md:flex': selectedChat,
+    }"
   >
-    <div class="hidden min-[1364px]:block">
+    <div class="md:hidden min-[1364px]:block">
       <SearchInput
         @search-input="(e) => (search = e)"
         placeholder="Search Name"
@@ -107,7 +110,7 @@ onBeforeUnmount(() => clearInterval(statusInterval));
       </template>
       <template v-else-if="search.trim().length">
         <ChatListItem
-          @click="() => emit('select-chat', chat)"
+          @click="() => emit('select-chat', chat, index)"
           v-for="(chat, index) in filteredChats"
           v-if="filteredChats.length"
           :key="chat.chat_id"
@@ -127,7 +130,7 @@ onBeforeUnmount(() => clearInterval(statusInterval));
       </template>
       <template v-else>
         <ChatListItem
-          @click="() => emit('select-chat', chat)"
+          @click="() => emit('select-chat', chat, index)"
           v-for="(chat, index) in chats"
           v-if="chats.length"
           :key="chat.chat_id"
@@ -139,7 +142,7 @@ onBeforeUnmount(() => clearInterval(statusInterval));
         />
 
         <p
-          class="my-auto h-full mx-auto text-main-purple-500 font-medium text-center hidden min-[1364px]:block"
+          class="my-auto h-full mx-auto text-main-purple-500 font-medium text-center md:hidden min-[1364px]:block"
           v-else
         >
           You have no chats yet!

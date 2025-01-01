@@ -47,7 +47,7 @@ const emit = defineEmits<{
         />
       </div>
       <div
-        class="hidden min-[1364px]:flex flex-col gap-1 text-main-black flex-1"
+        class="flex md:hidden min-[1364px]:flex flex-col gap-1 text-main-black flex-1"
       >
         <div class="flex items-center justify-between">
           <h3 class="text-sm font-semibold">

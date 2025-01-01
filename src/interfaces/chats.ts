@@ -8,6 +8,7 @@ export interface UserChat {
 }
 
 export interface LastMessage {
+  id: number;
   seen: boolean;
   message: string;
   sender_id: number;
@@ -31,10 +32,11 @@ export interface SendMessageDto {
   sender_id: number;
   chat_id: number;
   seen?: boolean;
-  id?: number;
+  id: number;
 }
 
 export interface UpdateInboxMessageDto {
+  id: number;
   message: string;
   sender_id: number;
   receiver_id: number;

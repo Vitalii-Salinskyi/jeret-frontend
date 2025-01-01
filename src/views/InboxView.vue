@@ -2,6 +2,7 @@
 import {
   onBeforeMount,
   onBeforeUnmount,
+  reactive,
   ref,
   useTemplateRef,
   watch,
@@ -33,16 +34,21 @@ const messageArea = useTemplateRef("messages-area");
 
 const chats = ref<UserChat[]>([]);
 const statusMap = ref<UserStatusType>({});
-const selectedChat = ref<UserChat>();
+const selectedChat = reactive<{ data: UserChat | null; index: number | null }>({
+  data: null,
+  index: null,
+});
 const messages = ref<IMessage[]>([]);
 const messagesToUpdate = ref<SendMessageDto[]>([]);
 
 const handleChatFetch = (newChats: UserChat[]) => (chats.value = newChats);
 
 const resetChat = () => {
-  socketStore.leaveChatRoom(selectedChat.value?.chat_id as number);
+  socketStore.leaveChatRoom(selectedChat.data?.chat_id as number);
 
-  selectedChat.value = undefined;
+  selectedChat.data = null;
+  selectedChat.index = null;
+
   messages.value = [];
   messagesToUpdate.value = [];
 };
@@ -73,16 +79,17 @@ const handleScrollToBottom = (
   }
 };
 
-const handleChatSelect = (chat: UserChat) => {
-  if (chat.chat_id === selectedChat.value?.chat_id) return;
+const handleChatSelect = (chat: UserChat, index: number) => {
+  if (chat.chat_id === selectedChat.data?.chat_id) return;
 
-  if (selectedChat.value) {
-    socketStore.leaveChatRoom(selectedChat.value?.chat_id);
+  if (selectedChat.data) {
+    socketStore.leaveChatRoom(selectedChat.data?.chat_id);
   }
 
   socketStore.joinChatRoom(chat.chat_id);
 
-  selectedChat.value = chat;
+  selectedChat.data = chat;
+  selectedChat.index = index;
   messagesToUpdate.value = [];
 };
 
@@ -97,56 +104,39 @@ const handleIncomingMessage = (newMessage: IMessage) => {
 
 const triggerUpdateSeenMessage = (
   messagesToUpdate: SendMessageDto[],
-  chatId: number,
-  type: "save" | "update"
+  chatId: number
 ) => {
   if (!messagesToUpdate.length) return [];
 
-  handleSeenUpdate(
-    {
-      incomingMessages: messagesToUpdate,
-      chatId,
-    },
-    type
-  );
+  handleSeenUpdate({
+    incomingMessages: messagesToUpdate,
+    chatId,
+  });
 
   socketStore.bulkMessagesSeenUpdate(
     messagesToUpdate,
-    selectedChat.value?.user_id as number,
-    chatId,
-    type
+    selectedChat.data?.user_id as number,
+    chatId
   );
 };
 
-const handleSeenUpdate = (
-  {
-    chatId,
-    incomingMessages,
-  }: {
-    chatId: number;
-    incomingMessages: SendMessageDto[];
-  },
-  type: "save" | "update"
-) => {
-  if (selectedChat.value?.chat_id === chatId && incomingMessages.length) {
-    messages.value = messages.value.map((message) => {
-      if (type === "update") {
-        const messageIds = incomingMessages.map((m) => m.id);
+const handleSeenUpdate = ({
+  chatId,
+  incomingMessages,
+}: {
+  chatId: number;
+  incomingMessages: SendMessageDto[];
+}) => {
+  if (selectedChat.data?.chat_id === chatId && incomingMessages.length) {
+    const messageIds = incomingMessages.map((m) => m.id);
 
-        if (messageIds.includes(message.id)) {
-          return { ...message, seen: true };
-        }
-      } else {
-        const messageToUpdate = incomingMessages.findIndex(
-          (m) =>
-            m.created_at === message.created_at &&
-            message.sender_id === m.sender_id &&
-            message.message === m.message
-        );
-        if (messageToUpdate !== -1) {
-          return { ...message, seen: true };
-        }
+    updateInboxStatus(messageIds);
+
+    messages.value = messages.value.map((message) => {
+      if (messageIds.includes(message.id)) {
+        return { ...message, seen: true };
       }
+
       return message;
     });
   }
@@ -155,8 +145,17 @@ const handleSeenUpdate = (
 const handleMessageSeenEmit = (message: IMessage, index: number) => {
   messagesToUpdate.value = [...messagesToUpdate.value, message];
 
-  if (message.chat_id === selectedChat.value?.chat_id) {
+  if (message.chat_id === selectedChat.data?.chat_id) {
     messages.value[index] = { ...messages.value[index], seen: true };
+  }
+};
+
+const updateInboxStatus = (messageIds: number[]) => {
+  const chatLastMessageId =
+    chats.value[selectedChat.index as number].last_message.id;
+
+  if (messageIds.includes(chatLastMessageId)) {
+    chats.value[selectedChat.index as number].last_message.seen = true;
   }
 };
 
@@ -173,6 +172,7 @@ const handleInboxMessageUpdate = (
     ...chats.value[chatIndex],
     last_message: {
       ...chats.value[chatIndex].last_message,
+      id: updateInboxMessageDto.id,
       message: updateInboxMessageDto.message,
       seen: updateInboxMessageDto.seen,
       sender_id: updateInboxMessageDto.sender_id,
@@ -182,24 +182,22 @@ const handleInboxMessageUpdate = (
 
 onBeforeMount(() => {
   socketStore.joinInbox(sessionStore.user?.id as number);
-  socketStore.socket?.on("inbox:message:seen:update", (data) => {
-    handleSeenUpdate(data, "update");
-  });
+  socketStore.socket?.on("inbox:message:seen:update", handleSeenUpdate);
   socketStore.socket?.on("inbox:receive:message", handleInboxMessageUpdate);
   socketStore.socket?.on("chat:receive:message", handleIncomingMessage);
 });
 
 watch(
-  () => selectedChat.value,
+  () => selectedChat.data,
   async () => {
-    if (selectedChat.value?.chat_id) {
-      const res = await getChatMessages(selectedChat.value.chat_id);
+    if (selectedChat.data?.chat_id) {
+      const res = await getChatMessages(selectedChat.data.chat_id);
 
       if (res.status === "failure") return;
 
       messages.value = res.data;
 
-      setTimeout(() => handleScrollToBottom("open", false), 0);
+      queueMicrotask(() => handleScrollToBottom("open", false));
 
       const unseenMessages = res.data.filter(
         (m) => !m.seen && m.sender_id !== sessionStore.user?.id
@@ -207,11 +205,7 @@ watch(
 
       if (!unseenMessages.length) return;
 
-      triggerUpdateSeenMessage(
-        unseenMessages,
-        selectedChat.value.chat_id,
-        "update"
-      );
+      triggerUpdateSeenMessage(unseenMessages, selectedChat.data.chat_id);
     }
   }
 );
@@ -222,8 +216,7 @@ watchThrottled(
     if (messagesToUpdate.value.length) {
       triggerUpdateSeenMessage(
         messagesToUpdate.value,
-        messagesToUpdate.value[0].chat_id,
-        "save"
+        messagesToUpdate.value[0].chat_id
       );
       messagesToUpdate.value = [];
     }
@@ -245,13 +238,13 @@ onBeforeUnmount(() => {
       @select-chat="handleChatSelect"
       @fetch-chats="handleChatFetch"
       @fetch-statuses="handleStatusesFetch"
-      :selected-chat="selectedChat"
+      :selected-chat="selectedChat.data"
       :status-map="statusMap"
       :chats="chats"
     />
-    <div v-if="selectedChat" class="w-full flex flex-col flex-1">
+    <div v-if="selectedChat.data" class="w-full flex flex-col flex-1">
       <ChatHeader
-        :selected-chat="selectedChat"
+        :selected-chat="selectedChat.data"
         :status-map="statusMap"
         @reset-chats="resetChat"
       />
@@ -272,7 +265,7 @@ onBeforeUnmount(() => {
       <ChatInput
         @update-inbox-message="handleInboxMessageUpdate"
         :senderId="sessionStore.user?.id as number"
-        :selected-chat="selectedChat"
+        :selected-chat="selectedChat.data"
       />
     </div>
   </section>

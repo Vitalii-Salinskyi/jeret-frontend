@@ -93,17 +93,23 @@ export const useSocketStore = defineStore("socket", () => {
     socket.value?.emit("inbox:send:message", message);
   };
 
+  const getNextMessageId = async (): Promise<number> => {
+    return new Promise((resolve) =>
+      socket.value?.emit("chat:get:next-message-id", (id: number) =>
+        resolve(id)
+      )
+    );
+  };
+
   const bulkMessagesSeenUpdate = (
     messages: SendMessageDto[],
     receiverId: number,
-    chatId: number,
-    type: "save" | "update"
+    chatId: number
   ) => {
     socket.value?.emit("chat:update:messages:seen", {
       messages,
       receiverId,
       chatId,
-      type,
     });
   };
 
@@ -113,6 +119,7 @@ export const useSocketStore = defineStore("socket", () => {
     sendMessage,
     joinChatRoom,
     joinInbox,
+    getNextMessageId,
     leaveChatRoom,
     leaveInbox,
     sendInboxMessage,

@@ -47,18 +47,19 @@ const handleInput = (e: Event) => {
   }
 };
 
-const handleSendMessage = () => {
-  if (!props.selectedChat || !props.senderId || !message.value.trim().length) {
-    return;
-  }
+const handleSendMessage = async () => {
+  const trimmedMessage = message.value.trim();
 
-  const messageText = message.value.trim();
+  if (!props.selectedChat || !props.senderId || !trimmedMessage.length) return;
+
+  const messageId = await socketStore.getNextMessageId();
 
   const newMessage: SendMessageDto = {
+    id: messageId,
     created_at: formatDateWithTimezone(new Date()),
     chat_id: props.selectedChat.chat_id,
     sender_id: props.senderId,
-    message: messageText,
+    message: trimmedMessage,
     seen: false,
   };
 
