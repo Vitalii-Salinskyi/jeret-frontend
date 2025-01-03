@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { onBeforeMount, onBeforeUnmount, ref } from "vue";
 
-import { FileText, X } from "lucide-vue-next";
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+import { FileText, X } from "lucide-vue-next";
+
+import { getFilePreview } from "@/utils";
 
 interface FilePreviewProps {
   file: File;
@@ -23,13 +25,7 @@ const emit = defineEmits<{
 
 const fileUrl = ref<string | undefined>(undefined);
 
-const getFilePreview = (file: File) => {
-  if (file.type.startsWith("image/")) {
-    fileUrl.value = URL.createObjectURL(file);
-  }
-};
-
-onBeforeMount(() => getFilePreview(props.file));
+onBeforeMount(() => (fileUrl.value = getFilePreview(props.file)));
 
 onBeforeUnmount(() => {
   if (fileUrl.value) URL.revokeObjectURL(fileUrl.value);

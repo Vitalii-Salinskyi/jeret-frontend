@@ -27,3 +27,10 @@ export function formatDateWithTimezone(date: Date): string {
 
   return `${datePart}.${milliseconds}${sign}${hoursOffset}${minutesOffset}`;
 }
+export const getFilePreview = (file: File) => {
+  if (file.type.startsWith("image/")) {
+    return URL.createObjectURL(file);
+  }
+
+  return undefined;
+};
