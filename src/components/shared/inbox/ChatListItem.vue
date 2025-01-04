@@ -66,7 +66,9 @@ const emit = defineEmits<{
         <div class="flex items-center justify-between gap-5">
           <p class="max-w-[196px] truncate text-xs">
             {{
-              chat.last_message
+              chat.last_message?.files_attached
+                ? "picture(s)"
+                : chat.last_message
                 ? chat.last_message.message
                 : `Say hi to ${chat.name}`
             }}

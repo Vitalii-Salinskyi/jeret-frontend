@@ -108,6 +108,11 @@
   .flex-center {
     @apply flex items-center justify-center;
   }
+
+  .inbox-img:before {
+    content: " ";
+    @apply block size-full bg-white animate-pulse;
+  }
 }
 
 .perspective {

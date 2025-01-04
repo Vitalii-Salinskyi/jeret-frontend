@@ -4,7 +4,11 @@ import { defineStore } from "pinia";
 import { io, Socket } from "socket.io-client";
 
 import { UserStatusType } from "@/interfaces/users";
-import { SendMessageDto, UpdateInboxMessageDto } from "@/interfaces/chats";
+import {
+  IMessage,
+  SendMessageDto,
+  UpdateInboxMessageDto,
+} from "@/interfaces/chats";
 
 export const useSocketStore = defineStore("socket", () => {
   const socket = ref<Socket | null>(null);
@@ -86,6 +90,7 @@ export const useSocketStore = defineStore("socket", () => {
   };
 
   const sendMessage = (sendMessageDto: SendMessageDto) => {
+    console.log(sendMessageDto);
     socket.value?.emit("chat:send:message", sendMessageDto);
   };
 
@@ -93,16 +98,18 @@ export const useSocketStore = defineStore("socket", () => {
     socket.value?.emit("inbox:send:message", message);
   };
 
-  const getNextMessageId = async (): Promise<number> => {
+  const getNextId = async (
+    fromTable: "messages" | "files"
+  ): Promise<number> => {
     return new Promise((resolve) =>
-      socket.value?.emit("chat:get:next-message-id", (id: number) =>
+      socket.value?.emit("chat:get:next-id", fromTable, (id: number) =>
         resolve(id)
       )
     );
   };
 
   const bulkMessagesSeenUpdate = (
-    messages: SendMessageDto[],
+    messages: (SendMessageDto | IMessage)[],
     receiverId: number,
     chatId: number
   ) => {
@@ -119,7 +126,7 @@ export const useSocketStore = defineStore("socket", () => {
     sendMessage,
     joinChatRoom,
     joinInbox,
-    getNextMessageId,
+    getNextId,
     leaveChatRoom,
     leaveInbox,
     sendInboxMessage,

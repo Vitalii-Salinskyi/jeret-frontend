@@ -39,7 +39,7 @@ const selectedChat = reactive<{ data: UserChat | null; index: number | null }>({
   index: null,
 });
 const messages = ref<IMessage[]>([]);
-const messagesToUpdate = ref<SendMessageDto[]>([]);
+const messagesToUpdate = ref<(SendMessageDto | IMessage)[]>([]);
 
 const handleChatFetch = (newChats: UserChat[]) => (chats.value = newChats);
 
@@ -103,7 +103,7 @@ const handleIncomingMessage = (newMessage: IMessage) => {
 };
 
 const triggerUpdateSeenMessage = (
-  messagesToUpdate: SendMessageDto[],
+  messagesToUpdate: (SendMessageDto | IMessage)[],
   chatId: number
 ) => {
   if (!messagesToUpdate.length) return [];
@@ -125,7 +125,7 @@ const handleSeenUpdate = ({
   incomingMessages,
 }: {
   chatId: number;
-  incomingMessages: SendMessageDto[];
+  incomingMessages: (SendMessageDto | IMessage)[];
 }) => {
   if (selectedChat.data?.chat_id === chatId && incomingMessages.length) {
     const messageIds = incomingMessages.map((m) => m.id);

@@ -27,6 +27,22 @@ export function formatDateWithTimezone(date: Date): string {
 
   return `${datePart}.${milliseconds}${sign}${hoursOffset}${minutesOffset}`;
 }
+
+export function formatBytes(bytes: number, decimals = 2) {
+  if (bytes === 0) return "0 Bytes";
+
+  const k = 1024; // 1 KB = 1024 Bytes
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+  // Calculate the index of the size unit to use
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  // Format the number with the appropriate size unit
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(decimals))} ${
+    sizes[i]
+  }`;
+}
+
 export const getFilePreview = (file: File) => {
   if (file.type.startsWith("image/")) {
     return URL.createObjectURL(file);
