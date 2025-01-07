@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div>Tasks</div>
+  <div>Projects</div>
 </template>

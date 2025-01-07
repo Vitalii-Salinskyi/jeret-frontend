@@ -7,10 +7,10 @@ import Google from "@/components/shared/auth/Google.vue";
 import HomeLayout from "@/layouts/HomeLayout.vue";
 import DashboardView from "../views/DashboardView.vue";
 import UsersView from "@/views/UsersView.vue";
-import TasksView from "@/views/TasksView.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import InboxView from "@/views/InboxView.vue";
 import ProfileSetup from "@/components/shared/auth/ProfileSetup.vue";
+import ProjectsView from "@/views/ProjectsView.vue";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -30,9 +30,9 @@ const routes: RouteRecordRaw[] = [
         component: UsersView,
       },
       {
-        path: "tasks",
-        name: "Tasks",
-        component: TasksView,
+        path: "projects",
+        name: "Projects",
+        component: ProjectsView,
       },
       {
         path: "settings",

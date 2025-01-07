@@ -1,9 +1,9 @@
 import {
   LayoutDashboard,
-  BookOpenText,
   CircleUser,
   MessageCircleMore,
   Settings,
+  ClipboardCheck,
 } from "lucide-vue-next";
 
 import { HeaderVariant } from "@/interfaces";
@@ -15,9 +15,9 @@ export const navLinks = [
     path: "/dashboard",
   },
   {
-    icon: BookOpenText,
-    title: "Tasks",
-    path: "/tasks",
+    icon: ClipboardCheck,
+    title: "Projects",
+    path: "/projects",
   },
   {
     icon: CircleUser,
