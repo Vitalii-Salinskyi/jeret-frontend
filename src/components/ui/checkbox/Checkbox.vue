@@ -10,12 +10,12 @@ import {
 import { computed, type HTMLAttributes } from "vue";
 
 const props = defineProps<
-  CheckboxRootProps & { class?: HTMLAttributes["class"]; id: string }
+  CheckboxRootProps & { class?: HTMLAttributes["class"]; id?: string }
 >();
 const emits = defineEmits<CheckboxRootEmits>();
 
 const delegatedProps = computed(() => {
-  const { class: _, id, ...delegated } = props;
+  const { class: _, id = "", ...delegated } = props;
 
   return delegated;
 });

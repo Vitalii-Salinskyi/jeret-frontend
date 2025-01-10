@@ -38,3 +38,5 @@ export interface FilterOption<T> {
   label: string;
   value: T;
 }
+
+export type positionType = "bottom" | "right" | "left" | "top";

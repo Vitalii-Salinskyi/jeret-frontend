@@ -25,11 +25,11 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div :class="cn('relative', className)">
+  <div :class="cn('relative h-[52px]', className)">
     <Input
       :class="
         cn(
-          'border-[#F5F5F7] placeholder:text-[#54577A] placeholder:text-sm pr-12 text-sm h-[52px] rounded-lg-max',
+          'border-[#F5F5F7] placeholder:text-[#54577A] placeholder:text-sm pr-12 text-sm h-full rounded-lg-max',
           inputClass
         )
       "
