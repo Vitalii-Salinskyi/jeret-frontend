@@ -4,26 +4,32 @@ interface UseOutsideClickProps<T> {
   templateRefName: string;
   shown?: Ref<T>;
   closeHandler?: () => void;
+  additionalElements?: Ref<HTMLElement | null>[];
 }
 
 export const useOutsideClick = <T>({
   templateRefName,
   shown,
   closeHandler,
+  additionalElements = [],
 }: UseOutsideClickProps<T>) => {
   const elRef = useTemplateRef<HTMLElement>(templateRefName);
 
-  const defaultCloseHandler = () => {
-    if (shown && typeof shown.value === "boolean") {
-      shown.value = false as T;
-    }
-  };
-
   const handleOutsideClick = (event: Event) => {
-    if (elRef.value && !elRef.value.contains(event.target as Node)) {
-      (shown && shown.value
-        ? closeHandler ?? defaultCloseHandler
-        : closeHandler!)();
+    const isOutsideMainElement =
+      elRef.value && !elRef.value.contains(event.target as Node);
+
+    const isOutsideAdditionalElements = additionalElements.every(
+      (elementRef) =>
+        !elementRef.value || !elementRef.value.contains(event.target as Node)
+    );
+
+    if (isOutsideMainElement && isOutsideAdditionalElements) {
+      if (closeHandler) {
+        closeHandler();
+      } else if (shown && typeof shown.value === "boolean") {
+        shown.value = false as T;
+      }
     }
   };
 
