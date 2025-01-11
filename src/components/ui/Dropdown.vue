@@ -8,16 +8,26 @@ import {
   useTemplateRef,
 } from "vue";
 
+import { useOutsideClick } from "@/hooks/useOutsideClick";
+
+import { cn } from "@/lib/utils";
+
 import { positionType } from "@/interfaces";
 
 interface DropdownProps {
-  position?: positionType;
+  side?: positionType;
   offset?: number;
+  alignX?: "left" | "center" | "right";
+  alignY?: "top" | "center" | "bottom";
+  className?: string;
 }
 
 const props = withDefaults(defineProps<DropdownProps>(), {
-  position: "bottom",
+  side: "bottom",
   offset: 6,
+  className: "",
+  alignX: "left",
+  alignY: "center",
 });
 
 const emit = defineEmits<{
@@ -26,10 +36,20 @@ const emit = defineEmits<{
 
 let resizeTimeout: NodeJS.Timeout;
 
-const trigger = useTemplateRef<HTMLElement>("trigger");
-const dropdown = useTemplateRef<HTMLElement>("dropdown");
-
 const isOpen = ref(false);
+
+const trigger = useTemplateRef<HTMLElement>("trigger");
+
+const { elRef: dropdown } = useOutsideClick({
+  templateRefName: "dropdown",
+  shown: isOpen,
+  additionalElements: [trigger],
+  closeHandler() {
+    if (isOpen.value) {
+      toggleDropdown();
+    }
+  },
+});
 
 const dropdownStyle = computed(() => {
   const { left, top } = calculatePosition();
@@ -76,7 +96,7 @@ const calculatePosition = (): {
   const triggerRect = trigger.value.getBoundingClientRect();
   const dropdownRect = dropdown.value.getBoundingClientRect();
   const space = getAvailableSpace(triggerRect);
-  const positions = getPositionPriority(props.position);
+  const positions = getPositionPriority(props.side);
 
   for (const pos of positions) {
     let hasSpace = false;
@@ -93,25 +113,60 @@ const calculatePosition = (): {
     }
 
     if (hasSpace || pos === positions[positions.length - 1]) {
+      let left = triggerRect.left;
+      let top = triggerRect.top;
+
+      switch (pos) {
+        case "bottom":
+        case "top":
+          switch (props.alignX) {
+            case "center":
+              left =
+                triggerRect.left +
+                triggerRect.width / 2 -
+                dropdownRect.width / 2;
+              break;
+            case "right":
+              left = triggerRect.right - dropdownRect.width;
+              break;
+          }
+          break;
+
+        case "left":
+        case "right":
+          switch (props.alignY) {
+            case "center":
+              top =
+                triggerRect.top +
+                triggerRect.height / 2 -
+                dropdownRect.height / 2;
+              break;
+            case "bottom":
+              top = triggerRect.bottom - dropdownRect.height;
+              break;
+          }
+          break;
+      }
+
       switch (pos) {
         case "bottom":
           return {
             top: triggerRect.bottom + props.offset,
-            left: triggerRect.left,
+            left,
           };
         case "top":
           return {
             top: triggerRect.top - dropdownRect.height - props.offset,
-            left: triggerRect.left,
+            left,
           };
         case "right":
           return {
-            top: triggerRect.top,
+            top,
             left: triggerRect.right + props.offset,
           };
         case "left":
           return {
-            top: triggerRect.top,
+            top,
             left: triggerRect.left - dropdownRect.width - props.offset,
           };
       }
@@ -168,10 +223,17 @@ onBeforeUnmount(() => {
 
     <Teleport to="body">
       <div
-        v-if="isOpen"
         ref="dropdown"
         :style="dropdownStyle"
-        class="fixed bg-white border border-gray-200 shadow-lg rounded-md p-4 w-[224px]"
+        :class="[
+          cn(
+            'fixed bg-white border border-gray-200 drop-shadow-sm rounded-lg-max p-2.5 transition-opacity duration-200',
+            className
+          ),
+          isOpen
+            ? 'opacity-100 pointer-events-auto'
+            : 'pointer-events-none opacity-0',
+        ]"
       >
         <slot name="content" />
       </div>
