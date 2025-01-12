@@ -1,4 +1,6 @@
-export const TASK_TYPES = {
+import { TaskStatus } from "@/interfaces/projects";
+
+export const TASK_TYPES: Record<keyof TaskStatus, { color: string }> = {
   pending: {
     color: "#FF8C00",
   },
