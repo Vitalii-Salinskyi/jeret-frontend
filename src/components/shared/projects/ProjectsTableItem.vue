@@ -12,7 +12,7 @@ interface ProjectsTableItemProps {
   project: IProject;
 }
 
-const props = defineProps<ProjectsTableItemProps>();
+defineProps<ProjectsTableItemProps>();
 </script>
 
 <template>
