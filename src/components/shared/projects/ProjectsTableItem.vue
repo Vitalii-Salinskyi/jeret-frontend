@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
 
 import { EllipsisVertical, ExternalLink, Trash2, User } from "lucide-vue-next";
 
 import { TASK_TYPES } from "@/constants/projects";
 
-import { TaskType } from "@/interfaces/projects";
-import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
+import { IProject, TaskType } from "@/interfaces/projects";
+
+interface ProjectsTableItemProps {
+  project: IProject;
+}
+
+const props = defineProps<ProjectsTableItemProps>();
 </script>
 
 <template>
@@ -16,16 +22,16 @@ import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
     </td>
     <td class="p-3 pl-0">
       <RouterLink
-        :to="`/projects/${1}`"
+        :to="`/projects/${project.id}`"
         class="line-clamp-1 max-w-[250px] 2xl:max-w-none w-fit"
       >
-        Super Cool Project Just WoW
+        {{ project.name }}
       </RouterLink>
     </td>
     <td class="p-3 pl-5">
       <div class="flex items-center gap-1.5">
         <User class="text-main-purple-400" />
-        3
+        {{ project.members_count }}
       </div>
     </td>
     <td class="p-3 pl-5">
@@ -33,9 +39,9 @@ import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
         <div
           v-for="task in Object.keys(TASK_TYPES)"
           :style="{backgroundColor: `${TASK_TYPES[task as TaskType].color}20`, color: TASK_TYPES[task as TaskType].color}"
-          class="flex-center text-red-500 rounded-md text-base py-1.5 px-2"
+          class="flex-center text-red-500 rounded-md text-base py-1.5 px-2 min-w-[35px]"
         >
-          31
+          {{ project.status[task as TaskType] }}
         </div>
       </div>
     </td>
@@ -57,7 +63,7 @@ import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
           <template #content>
             <div class="flex flex-col gap-1 size-full">
               <RouterLink
-                :to="`/projects/${1}`"
+                :to="`/projects/${project.id}`"
                 class="text-main-black flex items-center justify-center gap-3 text-sm p-1.5 hover:bg-gray-100 transition-colors rounded-lg"
               >
                 <ExternalLink width="17" />

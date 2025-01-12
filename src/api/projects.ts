@@ -4,35 +4,16 @@ import {
   CreateProjectDto,
   IProject,
   MemberDto,
+  projectsType,
   UpdateProjectDto,
 } from "@/interfaces/projects";
 import { ResponseResult } from "@/interfaces";
 
-export const getProjectByOwnerId = async (): Promise<
-  ResponseResult<IProject[]>
-> => {
+export const getProjects = async (
+  type: projectsType
+): Promise<ResponseResult<IProject[]>> => {
   try {
-    const res = await axiosWithAuth.get("/projects");
-
-    return {
-      status: "success",
-      code: res.status,
-      data: res.data,
-    };
-  } catch (error: any) {
-    return {
-      status: "failure",
-      code: error.status,
-      data: error.response.data.message,
-    };
-  }
-};
-
-export const getProjectMembership = async (): Promise<
-  ResponseResult<IProject[]>
-> => {
-  try {
-    const res = await axiosWithAuth.get("/projects/member");
+    const res = await axiosWithAuth.get(`/projects?type=${type}`);
 
     return {
       status: "success",

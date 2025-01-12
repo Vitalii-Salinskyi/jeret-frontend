@@ -41,8 +41,8 @@ export const headerVariants: Record<string, HeaderVariant> = {
     title: "Hi, ",
     subtitle: "Let's finish your task today!",
   },
-  Tasks: {
-    title: "Explore Task",
+  Projects: {
+    title: "Explore Projects",
   },
   Users: {
     title: "Explore Users",

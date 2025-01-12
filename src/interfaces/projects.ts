@@ -18,6 +18,8 @@ export interface IProject {
   owner_id: number;
 }
 
+export type projectsType = "all" | "own";
+
 export interface CreateProjectDto {
   name: string;
   owner_id: number;
