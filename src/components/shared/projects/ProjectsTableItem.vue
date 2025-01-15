@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import { useToast } from "@/components/ui/toast";
-
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
 
@@ -26,13 +24,11 @@ interface ProjectsTableItemProps {
 const props = defineProps<ProjectsTableItemProps>();
 
 const emit = defineEmits<{
+  (event: "remove-project", project: IProject): void;
   (event: "open-update-modal", project: IProject): void;
 }>();
 
-const { toast } = useToast();
-
 const isOwnProject = computed(() => props.userId === props.project.owner_id);
-
 </script>
 
 <template>
@@ -105,6 +101,7 @@ const isOwnProject = computed(() => props.userId === props.project.owner_id);
 
               <button
                 v-if="isOwnProject"
+                @click="emit('remove-project', project)"
                 class="text-red-500 flex items-center justify-center gap-2 text-sm px-4 p-1.5 hover:bg-gray-100 transition-colors rounded-lg"
               >
                 <Trash2 width="17" />

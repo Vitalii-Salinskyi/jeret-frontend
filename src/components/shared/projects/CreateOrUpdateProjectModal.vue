@@ -5,6 +5,7 @@ import { useSessionStore } from "@/stores/sessionStore";
 import { useToast } from "@/components/ui/toast";
 
 import AuthInput from "@/components/shared/auth/AuthInput.vue";
+import Spinner from "@/components/ui/Spinner.vue";
 
 import {
   Dialog,
@@ -44,6 +45,14 @@ const name = ref("");
 const isLoading = ref<boolean>(false);
 
 const isValidName = computed(() => name.value.trim().length > 0);
+
+const handleDialogUpdate = (val: boolean) => {
+  emit("close", val);
+
+  if (!val) {
+    name.value = "";
+  }
+};
 
 const createNewProject = async () => {
   if (!sessionStore.user?.id || !isValidName.value) return;
@@ -113,14 +122,6 @@ watch([() => props.type, () => props.project], ([newType, newProject]) => {
     name.value = props.project?.name as string;
   }
 });
-
-const handleDialogUpdate = (val: boolean) => {
-  emit("close", val);
-
-  if (!val) {
-    name.value = "";
-  }
-};
 </script>
 
 <template>
@@ -154,8 +155,16 @@ const handleDialogUpdate = (val: boolean) => {
         />
       </form>
       <DialogFooter>
-        <Button type="submit" form="projectForm" :disabled="!isValidName">
-          {{ type === "create" ? "Create" : "Update" }}
+        <Button
+          class="relative w-20"
+          type="submit"
+          form="projectForm"
+          :disabled="!isValidName"
+        >
+          <Spinner v-if="isLoading" />
+          <template v-else>
+            {{ type === "create" ? "Create" : "Update" }}
+          </template>
         </Button>
       </DialogFooter>
     </DialogContent>

@@ -19,6 +19,7 @@ const props = defineProps<ProjectsTableProps>();
 
 const emit = defineEmits<{
   (event: "open-update-modal", project: IProject): void;
+  (event: "remove-project", project: IProject): void;
 }>();
 
 const sessionStore = useSessionStore();
@@ -70,6 +71,7 @@ const emptyStateMessage = computed(() => {
         />
 
         <ProjectsTableItem
+          @remove-project="emit('remove-project', project)"
           @open-update-modal="(proj) => emit('open-update-modal', proj)"
           v-else-if="hasProjectsToDisplay"
           v-for="project in projectsToDisplay"

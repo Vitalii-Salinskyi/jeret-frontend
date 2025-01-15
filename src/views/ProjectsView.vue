@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from "vue";
 
+import { useToast } from "@/components/ui/toast";
+
 import CreateProjectModal from "@/components/shared/projects/CreateOrUpdateProjectModal.vue";
 import ProjectsTable from "@/components/shared/projects/ProjectsTable.vue";
 import SearchInput from "@/components/ui/SearchInput.vue";
@@ -16,12 +18,14 @@ import { Button } from "@/components/ui/button";
 
 import { Plus } from "lucide-vue-next";
 
-import { getProjects } from "@/api/projects";
+import { deleteProject, getProjects } from "@/api/projects";
 
 import {
   IProject,
   projectsType as projectsFetchType,
 } from "@/interfaces/projects";
+
+const { toast } = useToast();
 
 const isLoading = ref<boolean>(true);
 
@@ -82,6 +86,24 @@ const handleProjectUpdate = (project: IProject, newName: string) => {
   projects.value[projectIndex].name = newName;
 };
 
+const handleProjectRemove = async (project: IProject) => {
+  projects.value = projects.value.filter((p) => p.id !== project.id);
+
+  filterProjects(search.value);
+
+  const res = await deleteProject(project.id);
+
+  if (res.status === "failure") {
+    projects.value.push(project);
+    toast({
+      title: "Failed to delete the project",
+      description: res.data as unknown as string,
+      variant: "destructive",
+    });
+    return;
+  }
+};
+
 const openUpdateModal = (project: IProject) => {
   modalType.value = "update";
   projectToUpdate.value = project;
@@ -138,6 +160,7 @@ const handleModalClose = (isOpen: boolean) => {
         </CreateProjectModal>
       </div>
       <ProjectsTable
+        @remove-project="handleProjectRemove"
         @open-update-modal="openUpdateModal"
         :projects
         :filteredProjects
