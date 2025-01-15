@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeMount, ref, watch } from "vue";
 
+import CreateProjectModal from "@/components/shared/projects/CreateOrUpdateProjectModal.vue";
 import ProjectsTable from "@/components/shared/projects/ProjectsTable.vue";
 import SearchInput from "@/components/ui/SearchInput.vue";
 
@@ -30,6 +31,9 @@ const filteredProjects = ref<IProject[]>([]);
 const projectsType = ref<projectsFetchType>("all");
 const search = ref<string>("");
 
+const modalType = ref<"create" | "update" | null>(null);
+const projectToUpdate = ref<IProject | null>(null);
+
 const fetchProjects = async () => {
   isLoading.value = true;
 
@@ -44,6 +48,12 @@ const fetchProjects = async () => {
   }
 };
 
+const filterProjects = (search: string) => {
+  filteredProjects.value = projects.value.filter((proj) =>
+    proj.name.toLowerCase().includes(search.toLowerCase())
+  );
+};
+
 onBeforeMount(async () => {
   await fetchProjects();
 });
@@ -55,10 +65,34 @@ watch(projectsType, async () => {
 watch(search, () => {
   if (!search.value) return;
 
-  filteredProjects.value = projects.value.filter((proj) =>
-    proj.name.toLowerCase().includes(search.value.toLowerCase())
-  );
+  filterProjects(search.value);
 });
+
+const handleProjectCreate = (newProject: IProject) => {
+  projects.value.push(newProject);
+
+  filterProjects(search.value);
+};
+
+const handleProjectUpdate = (project: IProject, newName: string) => {
+  const projectIndex = projects.value.findIndex((p) => p.id === project.id);
+
+  if (projectIndex === -1) return;
+
+  projects.value[projectIndex].name = newName;
+};
+
+const openUpdateModal = (project: IProject) => {
+  modalType.value = "update";
+  projectToUpdate.value = project;
+};
+
+const handleModalClose = (isOpen: boolean) => {
+  if (!isOpen) {
+    modalType.value = null;
+    projectToUpdate.value = null;
+  }
+};
 </script>
 
 <template>
@@ -90,12 +124,26 @@ watch(search, () => {
             </SelectContent>
           </Select>
         </div>
-        <Button>
-          <Plus />
-          Create new project
-        </Button>
+        <CreateProjectModal
+          :type="modalType"
+          :project="projectToUpdate"
+          @project-create="handleProjectCreate"
+          @project-update="handleProjectUpdate"
+          @close="handleModalClose"
+        >
+          <Button @click="() => (modalType = 'create')">
+            <Plus />
+            Create new project
+          </Button>
+        </CreateProjectModal>
       </div>
-      <ProjectsTable :projects :filteredProjects :is-loading :search />
+      <ProjectsTable
+        @open-update-modal="openUpdateModal"
+        :projects
+        :filteredProjects
+        :is-loading
+        :search
+      />
     </div>
   </section>
 </template>

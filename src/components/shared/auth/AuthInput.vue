@@ -7,7 +7,7 @@ interface AuthInputProps extends /* @vue-ignore */ InputHTMLAttributes {
   id: string;
   label: string;
   placeholder: string;
-  error: string;
+  error?: string;
 }
 
 withDefaults(defineProps<AuthInputProps>(), {

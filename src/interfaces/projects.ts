@@ -32,7 +32,7 @@ export interface MemberDto {
 
 export interface UpdateProjectDto {
   name: string;
-  project_id: string;
+  project_id: number;
 }
 
 export interface MemberDto {

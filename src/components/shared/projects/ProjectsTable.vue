@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
+import { useSessionStore } from "@/stores/sessionStore";
+
 import ProjectsTableItem from "./ProjectsTableItem.vue";
 import ProjectsTableItemSkeleton from "./ProjectsTableItemSkeleton.vue";
 
@@ -14,6 +16,12 @@ interface ProjectsTableProps {
 }
 
 const props = defineProps<ProjectsTableProps>();
+
+const emit = defineEmits<{
+  (event: "open-update-modal", project: IProject): void;
+}>();
+
+const sessionStore = useSessionStore();
 
 const isSearching = computed(() => props.search.length > 0);
 
@@ -62,10 +70,12 @@ const emptyStateMessage = computed(() => {
         />
 
         <ProjectsTableItem
+          @open-update-modal="(proj) => emit('open-update-modal', proj)"
           v-else-if="hasProjectsToDisplay"
           v-for="project in projectsToDisplay"
           :project
           :key="project.id"
+          :user-id="sessionStore.user?.id as number"
         />
 
         <tr v-else>

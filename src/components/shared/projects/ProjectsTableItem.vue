@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import { computed } from "vue";
+
+import { useToast } from "@/components/ui/toast";
+
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 import Dropdown from "@/components/ui/Dropdown.vue";
 
-import { EllipsisVertical, ExternalLink, Trash2, User } from "lucide-vue-next";
+import {
+  EllipsisVertical,
+  ExternalLink,
+  FilePenLine,
+  Trash2,
+  User,
+} from "lucide-vue-next";
 
 import { TASK_TYPES } from "@/constants/projects";
 
@@ -10,9 +20,19 @@ import { IProject, TaskType } from "@/interfaces/projects";
 
 interface ProjectsTableItemProps {
   project: IProject;
+  userId: number;
 }
 
-defineProps<ProjectsTableItemProps>();
+const props = defineProps<ProjectsTableItemProps>();
+
+const emit = defineEmits<{
+  (event: "open-update-modal", project: IProject): void;
+}>();
+
+const { toast } = useToast();
+
+const isOwnProject = computed(() => props.userId === props.project.owner_id);
+
 </script>
 
 <template>
@@ -50,7 +70,7 @@ defineProps<ProjectsTableItemProps>();
         <Dropdown
           side="left"
           align-x="center"
-          align-y="top"
+          :align-y="isOwnProject ? 'top' : 'center'"
           :offset="4"
           class-name="p-1.5"
         >
@@ -69,8 +89,22 @@ defineProps<ProjectsTableItemProps>();
                 <ExternalLink width="17" />
                 Open
               </RouterLink>
-              <hr />
+
+              <hr v-if="isOwnProject" />
+
               <button
+                v-if="isOwnProject"
+                @click="emit('open-update-modal', project)"
+                class="text-main-black flex items-center justify-center gap-2 text-sm px-4 p-1.5 hover:bg-gray-100 transition-colors rounded-lg"
+              >
+                <FilePenLine width="17" />
+                Update
+              </button>
+
+              <hr v-if="isOwnProject" />
+
+              <button
+                v-if="isOwnProject"
                 class="text-red-500 flex items-center justify-center gap-2 text-sm px-4 p-1.5 hover:bg-gray-100 transition-colors rounded-lg"
               >
                 <Trash2 width="17" />
