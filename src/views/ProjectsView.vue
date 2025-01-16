@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 
-import { Plus } from "lucide-vue-next";
+import { Plus, X } from "lucide-vue-next";
 
 import { deleteProject, getProjects } from "@/api/projects";
 
@@ -31,6 +31,9 @@ const isLoading = ref<boolean>(true);
 
 const projects = ref<IProject[]>([]);
 const filteredProjects = ref<IProject[]>([]);
+
+const selectedProjectsLength = ref(0);
+const clearSelectedProjects = ref(false);
 
 const projectsType = ref<projectsFetchType>("all");
 const search = ref<string>("");
@@ -115,6 +118,32 @@ const handleModalClose = (isOpen: boolean) => {
     projectToUpdate.value = null;
   }
 };
+
+const handleSelectedProjectsUpdate = (
+  type: "increase" | "decrease",
+  val?: number,
+  updateByValueType?: "stack" | "set"
+) => {
+  if (val === undefined) {
+    type === "increase"
+      ? selectedProjectsLength.value++
+      : selectedProjectsLength.value--;
+  } else {
+    if (type === "decrease" && updateByValueType === "set" && val === 0) {
+      clearSelectedProjects.value = false;
+    }
+
+    if (updateByValueType === "set") {
+      selectedProjectsLength.value = val;
+    } else if (updateByValueType === "stack") {
+      if (type === "increase") {
+        selectedProjectsLength.value = selectedProjectsLength.value + val;
+      } else {
+        selectedProjectsLength.value = selectedProjectsLength.value - val;
+      }
+    }
+  }
+};
 </script>
 
 <template>
@@ -125,10 +154,40 @@ const handleModalClose = (isOpen: boolean) => {
     >
       <div class="p-5 pb-0 flex gap-2 justify-between flex-col sm:flex-row">
         <div class="flex gap-2 flex-col sm:flex-row">
+          <div
+            :class="{
+              'flex items-center gap-1.5 justify-between sm:w-[247px] h-11': true,
+              'opacity-0 pointer-events-none !w-0 !h-0':
+                !selectedProjectsLength,
+            }"
+          >
+            <div class="flex items-center gap-3">
+              <button>
+                <X
+                  @click="clearSelectedProjects = true"
+                  class="text-red-500 size-5 scale-click"
+                />
+              </button>
+              <p>
+                <span class="text-main-purple-500 font-medium">
+                  {{ selectedProjectsLength }}
+                </span>
+                selected
+              </p>
+            </div>
+            <Button
+              class="bg-red-500/80 text-white hover:bg-red-500 scale-click h-7 px-2"
+            >
+              Remove all
+            </Button>
+          </div>
           <SearchInput
             @search-input="(val) => (search = val)"
             placeholder="Search by name"
-            class="!h-11"
+            :class="{
+              '!h-11': true,
+              'opacity-0 pointer-events-none !w-0 !h-0': selectedProjectsLength,
+            }"
             :search
           />
           <Select v-model="projectsType">
@@ -147,11 +206,11 @@ const handleModalClose = (isOpen: boolean) => {
           </Select>
         </div>
         <CreateProjectModal
-          :type="modalType"
-          :project="projectToUpdate"
-          @project-create="handleProjectCreate"
           @project-update="handleProjectUpdate"
+          @project-create="handleProjectCreate"
           @close="handleModalClose"
+          :project="projectToUpdate"
+          :type="modalType"
         >
           <Button @click="() => (modalType = 'create')">
             <Plus />
@@ -160,11 +219,15 @@ const handleModalClose = (isOpen: boolean) => {
         </CreateProjectModal>
       </div>
       <ProjectsTable
+        @update:selected-length="handleSelectedProjectsUpdate"
         @remove-project="handleProjectRemove"
         @open-update-modal="openUpdateModal"
-        :projects
-        :filteredProjects
+        :selected-projects-length
+        :clear-selected-projects
+        :filtered-projects
+        :projects-type
         :is-loading
+        :projects
         :search
       />
     </div>

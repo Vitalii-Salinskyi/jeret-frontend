@@ -113,6 +113,10 @@
     content: " ";
     @apply block size-full bg-white animate-pulse;
   }
+
+  .scale-click {
+    @apply active:scale-95 transition-transform cursor-pointer;
+  }
 }
 
 .perspective {

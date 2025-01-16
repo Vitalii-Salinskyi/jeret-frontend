@@ -17,6 +17,7 @@ import { TASK_TYPES } from "@/constants/projects";
 import { IProject, TaskType } from "@/interfaces/projects";
 
 interface ProjectsTableItemProps {
+  selectedProjectsSet: Set<number>;
   project: IProject;
   userId: number;
 }
@@ -26,15 +27,31 @@ const props = defineProps<ProjectsTableItemProps>();
 const emit = defineEmits<{
   (event: "remove-project", project: IProject): void;
   (event: "open-update-modal", project: IProject): void;
+  (event: "check-update", id: number, isShiftPressed: boolean): void;
 }>();
 
+let isShiftPressed = false;
+
 const isOwnProject = computed(() => props.userId === props.project.owner_id);
+
+const handleCheckUpdate = () => {
+  emit("check-update", props.project.id, isShiftPressed);
+};
+
+const handleMouseDown = (event: MouseEvent) => {
+  isShiftPressed = event.shiftKey;
+};
 </script>
 
 <template>
   <tr class="text-lg border-b">
     <td class="pl-5 pr-3.5">
-      <Checkbox class="size-4 p-px rounded-sm" />
+      <Checkbox
+        :checked="selectedProjectsSet.has(project.id)"
+        @mousedown="handleMouseDown"
+        @update:checked="handleCheckUpdate"
+        class="size-4 p-px rounded-sm"
+      />
     </td>
     <td class="p-3 pl-0">
       <RouterLink

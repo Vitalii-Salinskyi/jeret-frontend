@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 import { useSessionStore } from "@/stores/sessionStore";
 
 import ProjectsTableItem from "./ProjectsTableItem.vue";
 import ProjectsTableItemSkeleton from "./ProjectsTableItemSkeleton.vue";
 
-import { IProject } from "@/interfaces/projects";
+import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
+
+import {
+  IProject,
+  projectsType as projectsFetchType,
+} from "@/interfaces/projects";
 
 interface ProjectsTableProps {
   projects: IProject[];
+  selectedProjectsLength: number;
+  projectsType: projectsFetchType;
   filteredProjects: IProject[];
+  clearSelectedProjects: boolean;
   isLoading: boolean;
   search: string;
 }
@@ -20,9 +28,22 @@ const props = defineProps<ProjectsTableProps>();
 const emit = defineEmits<{
   (event: "open-update-modal", project: IProject): void;
   (event: "remove-project", project: IProject): void;
+  (
+    event: "update:selected-length",
+    type: "increase" | "decrease",
+    value?: number,
+    updateByValueType?: "stack" | "set"
+  ): void;
 }>();
 
 const sessionStore = useSessionStore();
+
+const selectedProjectsSet = ref<Set<number>>(new Set());
+const lastUpdatedCheckbox = ref<{
+  id: number;
+  index: number;
+  checked: boolean;
+} | null>(null);
 
 const isSearching = computed(() => props.search.length > 0);
 
@@ -41,6 +62,115 @@ const emptyStateMessage = computed(() => {
 
   return "Get started by joining or creating your first project!";
 });
+
+const unselectEverything = () => {
+  selectedProjectsSet.value.clear();
+  lastUpdatedCheckbox.value = null;
+  emit("update:selected-length", "decrease", 0, "set");
+};
+
+const selectEverything = () => {
+  lastUpdatedCheckbox.value = null;
+  const newIds = new Set(projectsToDisplay.value.map((p) => p.id));
+
+  selectedProjectsSet.value = new Set([...newIds]);
+
+  emit(
+    "update:selected-length",
+    "increase",
+    selectedProjectsSet.value.size,
+    "set"
+  );
+};
+
+const handleSelectProject = (
+  id: number,
+  index: number,
+  isShiftPressed: boolean
+) => {
+  if (!isShiftPressed || !lastUpdatedCheckbox.value) {
+    const lastCheckData = { id, index, checked: false };
+
+    if (selectedProjectsSet.value.has(id)) {
+      selectedProjectsSet.value.delete(id);
+      emit("update:selected-length", "decrease");
+
+      lastCheckData.checked = false;
+    } else {
+      selectedProjectsSet.value.add(id);
+      emit("update:selected-length", "increase");
+
+      lastCheckData.checked = true;
+    }
+
+    lastUpdatedCheckbox.value = lastCheckData;
+  } else {
+    updateMultipleCheckboxes(id, index);
+  }
+};
+
+const updateMultipleCheckboxes = (id: number, index: number) => {
+  let sliceRange = null;
+
+  const isCurrentItemIndexHigher = lastUpdatedCheckbox.value!.index < index;
+  let isCurrentCheckboxChecked = selectedProjectsSet.value.has(id);
+
+  if (isCurrentItemIndexHigher) {
+    sliceRange = { start: lastUpdatedCheckbox.value!.index, end: index + 1 };
+  } else {
+    sliceRange = { start: index, end: lastUpdatedCheckbox.value!.index + 1 };
+  }
+
+  const projectsIndexRange = projectsToDisplay.value
+    .slice(sliceRange.start, sliceRange.end)
+    .map((p) => p.id);
+
+  const currentlySelectedInRange = projectsIndexRange.filter((id) =>
+    selectedProjectsSet.value.has(id)
+  ).length;
+
+  projectsIndexRange.forEach((projectId) => {
+    if (isCurrentCheckboxChecked) {
+      selectedProjectsSet.value.delete(projectId);
+    } else {
+      selectedProjectsSet.value.add(projectId);
+    }
+  });
+
+  const totalItemsInRange = projectsIndexRange.length;
+  let netChange: number;
+
+  if (isCurrentCheckboxChecked) {
+    netChange = -currentlySelectedInRange;
+  } else {
+    netChange = totalItemsInRange - currentlySelectedInRange;
+  }
+
+  emit(
+    "update:selected-length",
+    netChange > 0 ? "increase" : "decrease",
+    Math.abs(netChange),
+    "stack"
+  );
+
+  lastUpdatedCheckbox.value = {
+    id,
+    index,
+    checked: isCurrentCheckboxChecked,
+  };
+};
+
+watch(
+  [
+    () => props.projectsType,
+    () => props.search,
+    () => props.clearSelectedProjects,
+  ],
+  () => {
+    unselectEverything();
+    lastUpdatedCheckbox.value = null;
+  }
+);
 </script>
 
 <template>
@@ -50,7 +180,22 @@ const emptyStateMessage = computed(() => {
     >
       <thead class="bg-main-purple-100/20 border-y border-purple-100">
         <tr>
-          <th class="w-14" />
+          <th class="w-14">
+            <Checkbox
+              :checked="selectedProjectsLength > 0"
+              @update:checked="
+                selectedProjectsLength >= projectsToDisplay.length
+                  ? unselectEverything()
+                  : selectEverything()
+              "
+              :class="{
+                'size-4 p-px rounded-sm': true,
+                'data-[state=checked]:bg-transparent data-[state=checked]:text-main-black':
+                  selectedProjectsLength > 0 &&
+                  selectedProjectsLength < projectsToDisplay.length,
+              }"
+            />
+          </th>
           <th class="w-[29.5%] p-3 pl-0 font-medium text-base text-start">
             Project
           </th>
@@ -71,10 +216,16 @@ const emptyStateMessage = computed(() => {
         />
 
         <ProjectsTableItem
+          v-else-if="hasProjectsToDisplay"
+          v-for="(project, index) in projectsToDisplay"
+          @check-update="
+            (id, isShiftPressed) =>
+              handleSelectProject(id, index, isShiftPressed)
+          "
           @remove-project="emit('remove-project', project)"
           @open-update-modal="(proj) => emit('open-update-modal', proj)"
-          v-else-if="hasProjectsToDisplay"
-          v-for="project in projectsToDisplay"
+          :selected-projects-set
+          :last-updated-checkbox
           :project
           :key="project.id"
           :user-id="sessionStore.user?.id as number"
