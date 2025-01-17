@@ -112,6 +112,26 @@ export const deleteProject = async (
   }
 };
 
+export const bulkDeleteProjects = async (
+  ids: number[]
+): Promise<ResponseResult<void>> => {
+  try {
+    const res = await axiosWithAuth.delete(`/projects/bulk`, { data: { ids } });
+
+    return {
+      status: "success",
+      code: res.status,
+      data: res.data,
+    };
+  } catch (error: any) {
+    return {
+      status: "failure",
+      code: error.status,
+      data: error.response.data.message,
+    };
+  }
+};
+
 export const addNewMember = async (
   memberDto: MemberDto
 ): Promise<ResponseResult<void>> => {

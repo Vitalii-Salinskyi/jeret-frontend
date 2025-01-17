@@ -159,7 +159,7 @@ watch([() => props.type, () => props.project], ([newType, newProject]) => {
           class="relative w-20"
           type="submit"
           form="projectForm"
-          :disabled="!isValidName"
+          :disabled="!isValidName || isLoading"
         >
           <Spinner v-if="isLoading" />
           <template v-else>

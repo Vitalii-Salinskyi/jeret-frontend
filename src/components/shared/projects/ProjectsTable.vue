@@ -5,6 +5,7 @@ import { useSessionStore } from "@/stores/sessionStore";
 
 import ProjectsTableItem from "./ProjectsTableItem.vue";
 import ProjectsTableItemSkeleton from "./ProjectsTableItemSkeleton.vue";
+import RemoveProjectsConfirmModal from "./RemoveProjectsConfirmModal.vue";
 
 import Checkbox from "@/components/ui/checkbox/Checkbox.vue";
 
@@ -19,6 +20,7 @@ interface ProjectsTableProps {
   projectsType: projectsFetchType;
   filteredProjects: IProject[];
   clearSelectedProjects: boolean;
+  isRemovePopupOpen: boolean;
   isLoading: boolean;
   search: string;
 }
@@ -26,8 +28,10 @@ interface ProjectsTableProps {
 const props = defineProps<ProjectsTableProps>();
 
 const emit = defineEmits<{
+  (event: "update:delete-modal", val: boolean): void;
   (event: "open-update-modal", project: IProject): void;
   (event: "remove-project", project: IProject): void;
+  (event: "set-projects", projects: IProject[]): void;
   (
     event: "update:selected-length",
     type: "increase" | "decrease",
@@ -51,6 +55,25 @@ const projectsToDisplay = computed(() => {
   return isSearching.value ? props.filteredProjects : props.projects;
 });
 
+const ownedProjectsIdsToRemove = computed(() => {
+  if (selectedProjectsSet.value.size) {
+    const ids = projectsToDisplay.value
+      .filter((p) => {
+        if (
+          selectedProjectsSet.value.has(p.id) &&
+          p.owner_id === sessionStore.user?.id
+        ) {
+          return p.id;
+        }
+      })
+      .map((p) => p.id);
+
+    return ids;
+  }
+
+  return [];
+});
+
 const hasProjectsToDisplay = computed(
   () => !props.isLoading && projectsToDisplay.value.length
 );
@@ -62,6 +85,21 @@ const emptyStateMessage = computed(() => {
 
   return "Get started by joining or creating your first project!";
 });
+
+const handleProjectRemoveModalUpdate = (val: boolean, isDeleted?: boolean) => {
+  emit("update:delete-modal", val);
+
+  if (isDeleted) {
+    const updatedProjectsList = props.projects.filter(
+      (p) => !ownedProjectsIdsToRemove.value.includes(p.id)
+    );
+
+    emit("set-projects", updatedProjectsList);
+
+    emit("update:selected-length", "decrease", 0, "set");
+    selectedProjectsSet.value.clear();
+  }
+};
 
 const unselectEverything = () => {
   selectedProjectsSet.value.clear();
@@ -174,6 +212,11 @@ watch(
 </script>
 
 <template>
+  <RemoveProjectsConfirmModal
+    @update:open="handleProjectRemoveModalUpdate"
+    :projects-ids="ownedProjectsIdsToRemove"
+    :is-open="isRemovePopupOpen"
+  />
   <div class="overflow-x-auto size-full">
     <table
       class="table-fixed border-collapse text-main-black w-[700px] md:w-full overflow-y-auto"

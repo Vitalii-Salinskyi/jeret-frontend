@@ -32,6 +32,7 @@ const isLoading = ref<boolean>(true);
 const projects = ref<IProject[]>([]);
 const filteredProjects = ref<IProject[]>([]);
 
+const isRemovePopupOpen = ref<boolean>(false);
 const selectedProjectsLength = ref(0);
 const clearSelectedProjects = ref(false);
 
@@ -74,6 +75,10 @@ watch(search, () => {
 
   filterProjects(search.value);
 });
+
+const updateDeleteModal = (val: boolean) => {
+  isRemovePopupOpen.value = val;
+};
 
 const handleProjectCreate = (newProject: IProject) => {
   projects.value.push(newProject);
@@ -176,6 +181,7 @@ const handleSelectedProjectsUpdate = (
               </p>
             </div>
             <Button
+              @click="isRemovePopupOpen = true"
               class="bg-red-500/80 text-white hover:bg-red-500 scale-click h-7 px-2"
             >
               Remove all
@@ -219,11 +225,14 @@ const handleSelectedProjectsUpdate = (
         </CreateProjectModal>
       </div>
       <ProjectsTable
+        @set-projects="(newProjects) => (projects = newProjects)"
         @update:selected-length="handleSelectedProjectsUpdate"
+        @update:delete-modal="updateDeleteModal"
         @remove-project="handleProjectRemove"
         @open-update-modal="openUpdateModal"
         :selected-projects-length
         :clear-selected-projects
+        :is-remove-popup-open
         :filtered-projects
         :projects-type
         :is-loading
